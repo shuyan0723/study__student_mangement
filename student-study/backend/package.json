@@ -1,0 +1,73 @@
+{
+  "name": "student-grade-backend",
+  "version": "1.0.0",
+  "description": "Student Grade Management System Backend - Node.js + Express",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "db:create": "node scripts/createDb.js",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js",
+    "db:drop": "node scripts/dropDb.js"
+  },
+  "keywords": [
+    "student",
+    "grade",
+    "management",
+    "education",
+    "express",
+    "node.js"
+  ],
+  "author": "Your Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "4.18.2",
+    "cors": "2.8.5",
+    "dotenv": "16.0.3",
+    "mysql2": "3.1.0",
+    "sequelize": "6.28.0",
+    "jsonwebtoken": "9.0.0",
+    "bcryptjs": "2.4.3",
+    "express-validator": "7.0.0",
+    "helmet": "7.0.0",
+    "morgan": "1.10.0",
+    "multer": "1.4.5-lts.1",
+    "nodemailer": "6.9.0",
+    "redis": "4.5.1",
+    "joi": "17.9.0",
+    "uuid": "9.0.0",
+    "compression": "1.7.4",
+    "express-rate-limit": "6.7.0"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.17",
+    "@types/node": "19.11.0",
+    "@types/bcryptjs": "2.4.2",
+    "@types/jsonwebtoken": "9.0.2",
+    "@types/jest": "29.5.0",
+    "typescript": "5.0.2",
+    "ts-node": "10.9.1",
+    "nodemon": "2.0.20",
+    "jest": "29.5.0",
+    "ts-jest": "29.1.0",
+    "supertest": "6.3.3",
+    "@types/supertest": "2.0.12",
+    "eslint": "8.40.0",
+    "@typescript-eslint/eslint-plugin": "5.59.0",
+    "@typescript-eslint/parser": "5.59.0",
+    "prettier": "2.8.8"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

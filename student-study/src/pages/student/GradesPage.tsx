@@ -3,7 +3,7 @@ import { Card, Table, Tag, Statistic, Row, Col, Select, Button, Empty, Spin } fr
 import { DownloadOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
-import './StudentPage.css';
+import './StudentPage.less';
 
 export const StudentGradesPage = () => {
   const { user } = useAuthStore();

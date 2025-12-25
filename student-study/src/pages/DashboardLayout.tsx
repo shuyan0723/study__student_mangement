@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import './DashboardLayout.css';
+import './DashboardLayout.scss';
 
 const { Header, Sider, Content } = Layout;
 

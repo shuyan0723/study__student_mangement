@@ -3,7 +3,7 @@ import { Card, Button, Empty, Tag, Modal, message } from 'antd';
 import { CheckOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
-import './StudentPage.css';
+import './StudentPage.less';
 
 export const StudentCoursesPage = () => {
   const { user } = useAuthStore();

@@ -38,6 +38,7 @@ export interface Teacher extends User {
 
 // 课程
 export interface Course {
+  id: string;
   courseId: string;
   courseName: string;
   credits: number;

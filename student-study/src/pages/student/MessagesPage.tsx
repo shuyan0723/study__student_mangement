@@ -3,7 +3,7 @@ import { Card, Input, Button, Empty, Avatar, Space, Form, message } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
-import './StudentPage.css';
+import './StudentPage.less';
 
 export const StudentMessagesPage = () => {
   const { user } = useAuthStore();

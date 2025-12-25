@@ -2,11 +2,16 @@ import { Card, Row, Col, Statistic, Progress, Empty, Space, Tag } from 'antd';
 import { LineChartOutlined, BarChartOutlined, PieChartOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
+import * as echarts from 'echarts';
 
 export const AnalyticsPage = () => {
   const { user } = useAuthStore();
   const { grades, courses } = useDataStore();
+
+  const pieChartRef = useRef<HTMLDivElement>(null);
+  const lineChartRef = useRef<HTMLDivElement>(null);
+  const barChartRef = useRef<HTMLDivElement>(null);
 
   const studentGrades = useMemo(() => {
     return grades.filter((g) => g.studentId === user?.id);
@@ -49,6 +54,149 @@ export const AnalyticsPage = () => {
       excellentRate: parseFloat(excellentRate),
     };
   }, [studentGrades]);
+
+  useEffect(() => {
+    if (pieChartRef.current && studentGrades.length > 0) {
+      const myChart = echarts.init(pieChartRef.current);
+      const option = {
+        title: { text: '成绩等级分布', left: 'center', top: 0 },
+        tooltip: { trigger: 'item' },
+        legend: { bottom: '0%' },
+        series: [{
+          name: '课程数量',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '45%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2,
+          },
+          label: { show: false, position: 'center' },
+          emphasis: {
+            label: { show: true, fontSize: 16, fontWeight: 'bold' },
+          },
+          data: [
+            { value: analytics.gradeDistribution.A, name: 'A级(优秀)', itemStyle: { color: '#52c41a' } },
+            { value: analytics.gradeDistribution.B, name: 'B级(良好)', itemStyle: { color: '#1890ff' } },
+            { value: analytics.gradeDistribution.C, name: 'C级(中等)', itemStyle: { color: '#faad14' } },
+            { value: analytics.gradeDistribution.D, name: 'D级(及格)', itemStyle: { color: '#fa8c16' } },
+            { value: analytics.gradeDistribution.F, name: 'F级(不及格)', itemStyle: { color: '#ff4d4f' } },
+          ],
+        }],
+      };
+      myChart.setOption(option);
+      const handleResize = () => myChart.resize();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        myChart.dispose();
+      };
+    }
+  }, [analytics.gradeDistribution, studentGrades.length]);
+
+  useEffect(() => {
+    if (lineChartRef.current && studentGrades.length > 0) {
+      const myChart = echarts.init(lineChartRef.current);
+      const sortedGrades = [...studentGrades].sort((a, b) => a.courseId.localeCompare(b.courseId));
+      const courseNames = sortedGrades.map(g => {
+        const course = courses.find(c => c.id === g.courseId);
+        return course?.name || g.courseId;
+      });
+      const scores = sortedGrades.map(g => g.score);
+      const option = {
+        title: { text: '各课程成绩趋势', left: 'center', top: 0 },
+        tooltip: { trigger: 'axis' },
+        xAxis: {
+          type: 'category',
+          data: courseNames,
+          axisLabel: { interval: 0, rotate: 30 },
+        },
+        yAxis: {
+          type: 'value',
+          min: 0,
+          max: 100,
+        },
+        series: [{
+          name: '成绩',
+          type: 'line',
+          data: scores,
+          smooth: true,
+          lineStyle: { width: 3, color: '#1890ff' },
+          itemStyle: { color: '#1890ff' },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: 'rgba(24, 144, 255, 0.3)' },
+              { offset: 1, color: 'rgba(24, 144, 255, 0.05)' },
+            ]),
+          },
+          markLine: {
+            data: [
+              { yAxis: 60, name: '及格线', lineStyle: { color: '#faad14' } },
+              { yAxis: 85, name: '优秀线', lineStyle: { color: '#52c41a' } },
+            ],
+          },
+        }],
+      };
+      myChart.setOption(option);
+      const handleResize = () => myChart.resize();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        myChart.dispose();
+      };
+    }
+  }, [studentGrades, courses]);
+
+  useEffect(() => {
+    if (barChartRef.current && studentGrades.length > 0) {
+      const myChart = echarts.init(barChartRef.current);
+      const sortedGrades = [...studentGrades].sort((a, b) => a.courseId.localeCompare(b.courseId));
+      const courseNames = sortedGrades.map(g => {
+        const course = courses.find(c => c.id === g.courseId);
+        return course?.name || g.courseId;
+      });
+      const scores = sortedGrades.map(g => g.score);
+      const option = {
+        title: { text: '各课程成绩对比', left: 'center', top: 0 },
+        tooltip: { trigger: 'axis' },
+        xAxis: {
+          type: 'category',
+          data: courseNames,
+          axisLabel: { interval: 0, rotate: 30 },
+        },
+        yAxis: {
+          type: 'value',
+          min: 0,
+          max: 100,
+        },
+        series: [{
+          name: '成绩',
+          type: 'bar',
+          data: scores.map((score, index) => ({
+            value: score,
+            itemStyle: {
+              color: score >= 85 ? '#52c41a' : score >= 60 ? '#1890ff' : '#ff4d4f',
+            },
+          })),
+          barWidth: '50%',
+          label: {
+            show: true,
+            position: 'top',
+            formatter: '{c}分',
+          },
+        }],
+      };
+      myChart.setOption(option);
+      const handleResize = () => myChart.resize();
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        myChart.dispose();
+      };
+    }
+  }, [studentGrades, courses]);
 
   if (studentGrades.length === 0) {
     return (
@@ -99,78 +247,21 @@ export const AnalyticsPage = () => {
       </Card>
 
       <Row gutter={24}>
-        {/* 成绩等级分布 */}
-        <Col xs={24} md={12}>
+        <Col xs={24} md={8}>
           <Card title="成绩等级分布">
-            <Space direction="vertical" style={{ width: '100%' }}>
-              {Object.entries(analytics.gradeDistribution).map(([grade, count]) => (
-                <div key={grade}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <span>
-                      <Tag color={['success', 'processing', 'warning', 'warning', 'error'][grade.charCodeAt(0) - 65]}>
-                        {grade} 级
-                      </Tag>
-                    </span>
-                    <span>{count} 门课程</span>
-                  </div>
-                  <Progress
-                    percent={(count / studentGrades.length) * 100}
-                    size="small"
-                    status={grade === 'F' ? 'exception' : 'active'}
-                  />
-                </div>
-              ))}
-            </Space>
+            <div ref={pieChartRef} style={{ height: 300 }} />
           </Card>
         </Col>
 
-        {/* 学习状态 */}
-        <Col xs={24} md={12}>
-          <Card title="学习状态评估">
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <div style={{ padding: '12px', background: '#f0f5ff', borderRadius: 4 }}>
-                <p style={{ margin: 0 }}>
-                  <strong>优秀率</strong>
-                </p>
-                <Progress
-                  type="circle"
-                  percent={analytics.excellentRate}
-                  width={60}
-                  format={(percent) => `${percent}%`}
-                />
-                <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 12 }}>
-                  成绩≥85分的课程比例
-                </p>
-              </div>
+        <Col xs={24} md={8}>
+          <Card title="各课程成绩趋势">
+            <div ref={lineChartRef} style={{ height: 300 }} />
+          </Card>
+        </Col>
 
-              <div style={{ padding: '12px', background: '#f6ffed', borderRadius: 4 }}>
-                <p style={{ margin: 0 }}>
-                  <strong>及格情况</strong>
-                </p>
-                <Progress
-                  type="circle"
-                  percent={analytics.passRate}
-                  width={60}
-                  format={(percent) => `${percent}%`}
-                  status={analytics.passRate >= 90 ? 'success' : 'active'}
-                />
-                <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 12 }}>
-                  成绩≥60分的课程比例
-                </p>
-              </div>
-
-              <div style={{ padding: '12px', background: '#fff7e6', borderRadius: 4 }}>
-                <p style={{ margin: 0 }}>
-                  <strong>已完成课程</strong>
-                </p>
-                <p style={{ fontSize: 20, fontWeight: 'bold', margin: '8px 0 0 0' }}>
-                  {studentGrades.length} / {courses.length}
-                </p>
-                <p style={{ margin: '8px 0 0 0', color: '#666', fontSize: 12 }}>
-                  完成度: {((studentGrades.length / courses.length) * 100).toFixed(0)}%
-                </p>
-              </div>
-            </Space>
+        <Col xs={24} md={8}>
+          <Card title="各课程成绩对比">
+            <div ref={barChartRef} style={{ height: 300 }} />
           </Card>
         </Col>
       </Row>

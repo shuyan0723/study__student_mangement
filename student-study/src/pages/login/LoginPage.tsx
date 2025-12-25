@@ -3,7 +3,7 @@ import { Form, Input, Button, Card, Alert, Space, Tabs, Spin } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import './LoginPage.css';
+import './LoginPage.less';
 
 export const LoginPage = () => {
   const navigate = useNavigate();

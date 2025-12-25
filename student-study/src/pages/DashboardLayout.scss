@@ -1,0 +1,74 @@
+$sider-background: #fff;
+$logo-color: #667eea;
+$header-background: #fff;
+$content-background: #f5f7fa;
+$text-primary: #333;
+$border-color: #f0f0f0;
+$shadow-light: 2px 0 8px rgba(0, 0, 0, 0.06);
+$shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+.dashboard-sider {
+  background: $sider-background;
+  box-shadow: $shadow-light;
+}
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: $logo-color;
+  border-bottom: 1px solid $border-color;
+  user-select: none;
+}
+
+.dashboard-header {
+  background: $header-background;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: $shadow-medium;
+  height: 64px;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .user-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    .username {
+      font-size: 14px;
+      color: $text-primary;
+      max-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.dashboard-content {
+  background: $content-background;
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+}

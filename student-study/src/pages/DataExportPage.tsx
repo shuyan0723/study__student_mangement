@@ -1,11 +1,11 @@
-import { Card, Table, Button, Form, Input, Select, Row, Col, Space, Checkbox, Tag, message } from 'antd';
+import { Card, Table, Button, Form, Input, Select, Row, Col, message } from 'antd';
 import { DownloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useDataStore } from '../store/dataStore';
 
 export const DataExportPage = () => {
   const [form] = Form.useForm();
-  const { students, teachers, courses, grades } = useDataStore();
+  const { students, courses, grades } = useDataStore();
   const [loading, setLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [exportFormat, setExportFormat] = useState('csv');
@@ -221,7 +221,7 @@ export const DataExportPage = () => {
             <Table
               dataSource={searchResults}
               columns={columns}
-              rowKey={(_, index) => index.toString()}
+              rowKey={(record) => record.id || JSON.stringify(record)}
               size="small"
               pagination={{ pageSize: 10 }}
             />

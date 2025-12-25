@@ -144,6 +144,7 @@ const mockTeachers: Teacher[] = [
 
 const mockCourses: Course[] = [
   {
+    id: 'COU001',
     courseId: 'C001',
     courseName: '数据结构',
     credits: 3,
@@ -153,6 +154,7 @@ const mockCourses: Course[] = [
     teacherName: '王教授',
   },
   {
+    id: 'COU002',
     courseId: 'C002',
     courseName: '算法设计',
     credits: 3,
@@ -162,6 +164,7 @@ const mockCourses: Course[] = [
     teacherName: '王教授',
   },
   {
+    id: 'COU003',
     courseId: 'C003',
     courseName: '数据库原理',
     credits: 3,
@@ -171,6 +174,7 @@ const mockCourses: Course[] = [
     teacherName: '李教授',
   },
   {
+    id: 'COU004',
     courseId: 'C004',
     courseName: '计算机网络',
     credits: 3,
@@ -180,6 +184,7 @@ const mockCourses: Course[] = [
     teacherName: '李教授',
   },
   {
+    id: 'COU005',
     courseId: 'C005',
     courseName: '操作系统',
     credits: 4,
@@ -189,6 +194,7 @@ const mockCourses: Course[] = [
     teacherName: '王教授',
   },
   {
+    id: 'COU006',
     courseId: 'C006',
     courseName: '软件工程',
     credits: 3,
@@ -198,6 +204,7 @@ const mockCourses: Course[] = [
     teacherName: '李教授',
   },
   {
+    id: 'COU007',
     courseId: 'C007',
     courseName: '机器学习',
     credits: 3,
@@ -207,6 +214,7 @@ const mockCourses: Course[] = [
     teacherName: '王教授',
   },
   {
+    id: 'COU008',
     courseId: 'C008',
     courseName: '计算机图形学',
     credits: 3,
@@ -216,6 +224,7 @@ const mockCourses: Course[] = [
     teacherName: '李教授',
   },
   {
+    id: 'COU009',
     courseId: 'C009',
     courseName: 'Web开发技术',
     credits: 3,
@@ -225,6 +234,7 @@ const mockCourses: Course[] = [
     teacherName: '王教授',
   },
   {
+    id: 'COU010',
     courseId: 'C010',
     courseName: '信息安全基础',
     credits: 2,

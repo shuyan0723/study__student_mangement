@@ -1,4 +1,3 @@
-import React from 'react';
 import { Route } from 'react-router-dom';
 
 // 管理员相关页面（pages/admin文件夹）

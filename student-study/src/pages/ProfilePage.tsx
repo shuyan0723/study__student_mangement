@@ -19,7 +19,7 @@ export const ProfilePage = () => {
     return false;
   };
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (_values: any) => {
     setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 800));

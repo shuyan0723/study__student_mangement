@@ -1,14 +1,9 @@
 
 import { Button, Result, Space } from 'antd';
-import { HomeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
-
-  const handleGoHome = () => {
-    navigate('/dashboard');
-  };
 
   const handleGoLogin = () => {
     navigate('/login');

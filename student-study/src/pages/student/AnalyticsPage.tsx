@@ -1,4 +1,4 @@
-import { Card, Row, Col, Statistic, Progress, Empty, Space, Tag } from 'antd';
+import { Card, Row, Col, Statistic, Empty, Space } from 'antd';
 import { LineChartOutlined, BarChartOutlined, PieChartOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
@@ -102,7 +102,7 @@ export const AnalyticsPage = () => {
       const sortedGrades = [...studentGrades].sort((a, b) => a.courseId.localeCompare(b.courseId));
       const courseNames = sortedGrades.map(g => {
         const course = courses.find(c => c.id === g.courseId);
-        return course?.name || g.courseId;
+        return course?.courseName || g.courseId;
       });
       const scores = sortedGrades.map(g => g.score);
       const option = {
@@ -155,7 +155,7 @@ export const AnalyticsPage = () => {
       const sortedGrades = [...studentGrades].sort((a, b) => a.courseId.localeCompare(b.courseId));
       const courseNames = sortedGrades.map(g => {
         const course = courses.find(c => c.id === g.courseId);
-        return course?.name || g.courseId;
+        return course?.courseName || g.courseId;
       });
       const scores = sortedGrades.map(g => g.score);
       const option = {
@@ -174,7 +174,7 @@ export const AnalyticsPage = () => {
         series: [{
           name: '成绩',
           type: 'bar',
-          data: scores.map((score, index) => ({
+          data: scores.map((score) => ({
             value: score,
             itemStyle: {
               color: score >= 85 ? '#52c41a' : score >= 60 ? '#1890ff' : '#ff4d4f',

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Route } from 'react-router-dom';
 
 // 学生相关页面（pages/student文件夹）

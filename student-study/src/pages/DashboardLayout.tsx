@@ -9,6 +9,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   BellOutlined,
+  PieChartOutlined,
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -109,6 +110,24 @@ export const DashboardLayout = () => {
         label: '学生交流',
         onClick: () => navigate('/teacher/messages'),
       },
+      {
+        key: 'teacher-grade-3d',
+        icon: <PieChartOutlined />,
+        label: '成绩3D分布',
+        onClick: () => navigate('/teacher/grade-3d'),
+      },
+      // {
+      //   key: 'teacher-teaching-3d',
+      //   icon: <DashboardOutlined />,
+      //   label: '教学数据3D',
+      //   onClick: () => navigate('/teacher/teaching-3d'),
+      // },
+      // {
+      //   key: 'teacher-classroom-3d',
+      //   icon: <TeamOutlined />,
+      //   label: '课堂互动3D',
+      //   onClick: () => navigate('/teacher/classroom-3d'),
+      // },
     ];
 
     const adminItems = [

@@ -3,6 +3,7 @@ import { CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
 import { useMemo } from 'react';
+import CourseCalendar from '../../components/CourseCalendar';
 
 export const SchedulePage = () => {
   const { user } = useAuthStore();
@@ -198,18 +199,7 @@ export const SchedulePage = () => {
           {
             label: '课程日历',
             key: 'calendar',
-            children: (
-              <Card title="课程日历">
-                <div style={{ textAlign: 'center', padding: 40 }}>
-                  <p style={{ fontSize: 16, color: '#999' }}>
-                    📅 课程日历功能开发中...
-                  </p>
-                  <p style={{ color: '#999', fontSize: 12 }}>
-                    即将推出可视化课程日历，支持iCal导出
-                  </p>
-                </div>
-              </Card>
-            ),
+            children: <CourseCalendar courses={mySchedule} />,
           },
         ]}
       />

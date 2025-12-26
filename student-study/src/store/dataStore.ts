@@ -152,6 +152,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_001',
     teacherName: '王教授',
+    schedule: [
+      { dayOfWeek: 1, startSection: 1, endSection: 2, location: '教101' },
+      { dayOfWeek: 3, startSection: 3, endSection: 4, location: '实验楼A205' },
+    ],
   },
   {
     id: 'COU002',
@@ -162,6 +166,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_001',
     teacherName: '王教授',
+    schedule: [
+      { dayOfWeek: 2, startSection: 1, endSection: 2, location: '教102' },
+      { dayOfWeek: 4, startSection: 3, endSection: 4, location: '实验楼A206' },
+    ],
   },
   {
     id: 'COU003',
@@ -172,6 +180,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_002',
     teacherName: '李教授',
+    schedule: [
+      { dayOfWeek: 1, startSection: 5, endSection: 6, location: '教201' },
+      { dayOfWeek: 3, startSection: 5, endSection: 6, location: '实验楼B301' },
+    ],
   },
   {
     id: 'COU004',
@@ -182,6 +194,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_002',
     teacherName: '李教授',
+    schedule: [
+      { dayOfWeek: 2, startSection: 5, endSection: 6, location: '教202' },
+      { dayOfWeek: 4, startSection: 5, endSection: 6, location: '实验楼B302' },
+    ],
   },
   {
     id: 'COU005',
@@ -192,6 +208,11 @@ const mockCourses: Course[] = [
     hours: 64,
     teacherId: 'teacher_001',
     teacherName: '王教授',
+    schedule: [
+      { dayOfWeek: 1, startSection: 3, endSection: 4, location: '教103' },
+      { dayOfWeek: 3, startSection: 1, endSection: 2, location: '实验楼A301' },
+      { dayOfWeek: 5, startSection: 1, endSection: 2, location: '教103' },
+    ],
   },
   {
     id: 'COU006',
@@ -202,6 +223,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_002',
     teacherName: '李教授',
+    schedule: [
+      { dayOfWeek: 2, startSection: 3, endSection: 4, location: '教203' },
+      { dayOfWeek: 4, startSection: 1, endSection: 2, location: '实验楼B401' },
+    ],
   },
   {
     id: 'COU007',
@@ -212,6 +237,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_001',
     teacherName: '王教授',
+    schedule: [
+      { dayOfWeek: 1, startSection: 7, endSection: 8, location: '教301' },
+      { dayOfWeek: 3, startSection: 7, endSection: 8, location: '实验楼C501' },
+    ],
   },
   {
     id: 'COU008',
@@ -222,6 +251,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_002',
     teacherName: '李教授',
+    schedule: [
+      { dayOfWeek: 2, startSection: 7, endSection: 8, location: '教302' },
+      { dayOfWeek: 4, startSection: 7, endSection: 8, location: '实验楼C502' },
+    ],
   },
   {
     id: 'COU009',
@@ -232,6 +265,10 @@ const mockCourses: Course[] = [
     hours: 48,
     teacherId: 'teacher_001',
     teacherName: '王教授',
+    schedule: [
+      { dayOfWeek: 3, startSection: 3, endSection: 4, location: '教303' },
+      { dayOfWeek: 5, startSection: 3, endSection: 4, location: '实验楼C601' },
+    ],
   },
   {
     id: 'COU010',
@@ -242,6 +279,9 @@ const mockCourses: Course[] = [
     hours: 32,
     teacherId: 'teacher_002',
     teacherName: '李教授',
+    schedule: [
+      { dayOfWeek: 4, startSection: 3, endSection: 4, location: '教304' },
+    ],
   },
 ];
 

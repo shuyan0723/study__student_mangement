@@ -107,7 +107,7 @@ User.init(
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
-      onUpdate: DataTypes.NOW
+      onUpdate: 'CURRENT_TIMESTAMP'
     },
     deleted_at: {
       type: DataTypes.DATE,

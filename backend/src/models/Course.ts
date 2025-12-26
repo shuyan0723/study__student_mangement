@@ -139,7 +139,7 @@ Course.init(
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
-      onUpdate: DataTypes.NOW
+      onUpdate: 'CURRENT_TIMESTAMP'
     }
   },
   {

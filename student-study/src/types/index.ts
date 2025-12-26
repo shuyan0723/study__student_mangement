@@ -36,6 +36,14 @@ export interface Teacher extends User {
   status: 'active' | 'inactive';
 }
 
+// 课程时间安排
+export interface CourseSchedule {
+  dayOfWeek: number;
+  startSection: number;
+  endSection: number;
+  location?: string;
+}
+
 // 课程
 export interface Course {
   id: string;
@@ -46,6 +54,7 @@ export interface Course {
   hours: number;
   teacherId: string;
   teacherName?: string;
+  schedule?: CourseSchedule[];
 }
 
 // 学生选课

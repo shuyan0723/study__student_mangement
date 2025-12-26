@@ -128,6 +128,7 @@ export const StudentCoursesPage = () => {
         onCancel={() => setIsModalVisible(false)}
         footer={null}
         width={700}
+        style={{ top: '4%' }}
       >
         {availableCourses.length > 0 ? (
           <div>
@@ -137,17 +138,18 @@ export const StudentCoursesPage = () => {
                   <div className="course-details">
                     <div className="course-name">{course.courseName}</div>
                     <div className="course-meta">
-                      <span>教师: {course.teacherName}</span>
+                      <span>教师: {course.teacherName},</span>
                       <span>学分: {course.credits}</span>
                       <span>学时: {course.hours}</span>
                       <span>学期: {course.semester}</span>
                     </div>
                   </div>
                   <Button
-                    type="primary"
+                    // type="primary"
                     icon={<CheckOutlined />}
                     onClick={() => handleEnroll(course.courseId)}
                     loading={loading}
+                    // style={{ top: '5%'}}
                   >
                     选择
                   </Button>

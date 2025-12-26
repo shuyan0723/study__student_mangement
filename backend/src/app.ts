@@ -50,6 +50,10 @@ app.get('/api/health', (_req: Request, res: Response) => {
 import authRoutes from './routes/authRoutes';
 import studentRoutes from './routes/studentRoutes';
 import courseRoutes from './routes/courseRoutes';
+import gradeRoutes from './routes/gradeRoutes';
+// import teacherRoutes from './routes/teacherRoutes';
+import messageRoutes from './routes/messageRoutes';
+import appealRoutes from './routes/appealRoutes';
 
 // API Routes
 // Authentication routes
@@ -62,22 +66,16 @@ app.use('/api/students', studentRoutes);
 app.use('/api/courses', courseRoutes);
 
 // Grades routes
-app.get('/api/grades', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    data: [],
-    message: 'Grades endpoint'
-  });
-});
+app.use('/api/grades', gradeRoutes);
+
+// Teachers routes
+// app.use('/api/teachers', teacherRoutes);
 
 // Messages routes
-app.get('/api/messages', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    data: [],
-    message: 'Messages endpoint'
-  });
-});
+app.use('/api/messages', messageRoutes);
+
+// Appeals routes
+app.use('/api/appeals', appealRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

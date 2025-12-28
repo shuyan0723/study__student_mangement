@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body, param, query } from 'express-validator';
-import authMiddleware from '../middleware/authMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
 import {
   getAllAppeals,
   getAppealById,

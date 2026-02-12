@@ -1,8 +1,22 @@
-import { Card, Table, Button, Modal, Form, Input, Select, Space, Tag, Empty, Steps, message, Divider } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import { useState, useMemo } from 'react';
-import { useAuthStore } from '../../store/authStore';
-import { useDataStore } from '../../store/dataStore';
+import {
+  Card,
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  Space,
+  Tag,
+  Empty,
+  Steps,
+  message,
+  Divider,
+} from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { useState, useMemo } from "react";
+import { useAuthStore } from "../../store/authStore";
+import { useDataStore } from "../../store/dataStore";
 
 interface Appeal {
   id: string;
@@ -13,7 +27,7 @@ interface Appeal {
   originalScore: number;
   appealReason: string;
   appealTime: string;
-  status: 'pending' | 'reviewing' | 'approved' | 'rejected';
+  status: "pending" | "reviewing" | "approved" | "rejected";
   reviewedBy?: string;
   reviewedTime?: string;
   reviewFeedback?: string;
@@ -29,33 +43,33 @@ export const AppealPage = () => {
 
   const [appeals, setAppeals] = useState<Appeal[]>([
     {
-      id: '1',
-      studentId: 'student_001',
-      studentName: '李明',
-      courseId: 'C001',
-      courseName: '数据结构',
+      id: "1",
+      studentId: "student_001",
+      studentName: "李明",
+      courseId: "C001",
+      courseName: "数据结构",
       originalScore: 78,
-      appealReason: '认为第三道题判分有误，应该给予部分分数',
-      appealTime: '2024-10-28 10:00',
-      status: 'approved',
-      reviewedBy: '王教授',
-      reviewedTime: '2024-10-29 15:00',
-      reviewFeedback: '经检查，确实有判分错误，成绩调整为82分',
+      appealReason: "认为第三道题判分有误，应该给予部分分数",
+      appealTime: "2024-10-28 10:00",
+      status: "approved",
+      reviewedBy: "王教授",
+      reviewedTime: "2024-10-29 15:00",
+      reviewFeedback: "经检查，确实有判分错误，成绩调整为82分",
       newScore: 82,
     },
     {
-      id: '2',
-      studentId: 'student_001',
-      studentName: '李明',
-      courseId: 'C002',
-      courseName: '算法设计',
+      id: "2",
+      studentId: "student_001",
+      studentName: "李明",
+      courseId: "C002",
+      courseName: "算法设计",
       originalScore: 88,
-      appealReason: '对最终成绩有异议，希望重新评阅',
-      appealTime: '2024-11-01 14:30',
-      status: 'reviewing',
-      reviewedBy: '李教授',
-      reviewedTime: '2024-11-02 10:00',
-      reviewFeedback: '正在复审中...',
+      appealReason: "对最终成绩有异议，希望重新评阅",
+      appealTime: "2024-11-01 14:30",
+      status: "reviewing",
+      reviewedBy: "李教授",
+      reviewedTime: "2024-11-02 10:00",
+      reviewFeedback: "正在复审中...",
     },
   ]);
 
@@ -64,17 +78,17 @@ export const AppealPage = () => {
   }, [appeals, user?.id]);
 
   const statusColorMap: Record<string, string> = {
-    pending: 'warning',
-    reviewing: 'processing',
-    approved: 'success',
-    rejected: 'error',
+    pending: "warning",
+    reviewing: "processing",
+    approved: "success",
+    rejected: "error",
   };
 
   const statusTextMap: Record<string, string> = {
-    pending: '待审核',
-    reviewing: '审核中',
-    approved: '已批准',
-    rejected: '已驳回',
+    pending: "待审核",
+    reviewing: "审核中",
+    approved: "已批准",
+    rejected: "已驳回",
   };
 
   const handleSubmitAppeal = async (values: any) => {
@@ -83,30 +97,31 @@ export const AppealPage = () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const selectedGrade = grades.find(
-        (g) => g.studentId === user?.id && g.courseId === values.courseId
+        (g) => g.studentId === user?.id && g.courseId === values.courseId,
       );
 
       if (!selectedGrade) {
-        message.error('该课程无成绩记录');
+        message.error("该课程无成绩记录");
         return;
       }
 
       const newAppeal: Appeal = {
         id: `appeal_${Date.now()}`,
-        studentId: user?.id || '',
-        studentName: user?.username || '',
+        studentId: user?.id || "",
+        studentName: user?.username || "",
         courseId: values.courseId,
-        courseName: courses.find((c) => c.courseId === values.courseId)?.courseName || '',
+        courseName:
+          courses.find((c) => c.courseId === values.courseId)?.courseName || "",
         originalScore: selectedGrade.score,
         appealReason: values.appealReason,
-        appealTime: new Date().toLocaleString('zh-CN'),
-        status: 'pending',
+        appealTime: new Date().toLocaleString("zh-CN"),
+        status: "pending",
       };
 
       setAppeals([...appeals, newAppeal]);
       form.resetFields();
       setIsModalVisible(false);
-      message.success('申诉已提交，请等待审核');
+      message.success("申诉已提交，请等待审核");
     } finally {
       setLoading(false);
     }
@@ -114,51 +129,51 @@ export const AppealPage = () => {
 
   const columns = [
     {
-      title: '课程名称',
-      dataIndex: 'courseName',
-      key: 'courseName',
+      title: "课程名称",
+      dataIndex: "courseName",
+      key: "courseName",
     },
     {
-      title: '原始成绩',
-      dataIndex: 'originalScore',
-      key: 'originalScore',
+      title: "原始成绩",
+      dataIndex: "originalScore",
+      key: "originalScore",
       render: (score: number) => <strong>{score}分</strong>,
     },
     {
-      title: '申诉时间',
-      dataIndex: 'appealTime',
-      key: 'appealTime',
+      title: "申诉时间",
+      dataIndex: "appealTime",
+      key: "appealTime",
     },
     {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
       render: (status: string) => (
         <Tag color={statusColorMap[status]}>{statusTextMap[status]}</Tag>
       ),
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       render: (_: any, record: Appeal) => (
         <Space>
           <Button type="link" size="small">
             查看详情
           </Button>
-          {record.status === 'pending' && (
+          {record.status === "pending" && (
             <Button
               type="link"
               size="small"
               danger
               onClick={() => {
                 Modal.confirm({
-                  title: '确认撤回',
-                  content: '撤回后无法重新提交，确认撤回吗？',
-                  okText: '确定',
-                  cancelText: '取消',
+                  title: "确认撤回",
+                  content: "撤回后无法重新提交，确认撤回吗？",
+                  okText: "确定",
+                  cancelText: "取消",
                   onOk: () => {
                     setAppeals(appeals.filter((a) => a.id !== record.id));
-                    message.success('申诉已撤回');
+                    message.success("申诉已撤回");
                   },
                 });
               }}
@@ -174,7 +189,9 @@ export const AppealPage = () => {
   const getCourseOptions = () => {
     const studentGrades = grades.filter((g) => g.studentId === user?.id);
     return studentGrades.map((g) => ({
-      label: courses.find((c) => c.courseId === g.courseId)?.courseName || g.courseId,
+      label:
+        courses.find((c) => c.courseId === g.courseId)?.courseName ||
+        g.courseId,
       value: g.courseId,
     }));
   };
@@ -187,10 +204,10 @@ export const AppealPage = () => {
         <Steps
           current={-1}
           items={[
-            { title: '提交申诉', description: '提交成绩申诉申请' },
-            { title: '待审核', description: '系统接收您的申诉' },
-            { title: '审核中', description: '教师进行复审' },
-            { title: '完成', description: '获得审核结果' },
+            { title: "提交申诉", description: "提交成绩申诉申请" },
+            { title: "待审核", description: "系统接收您的申诉" },
+            { title: "审核中", description: "教师进行复审" },
+            { title: "完成", description: "获得审核结果" },
           ]}
         />
       </Card>
@@ -230,7 +247,13 @@ export const AppealPage = () => {
           {myAppeals.map((appeal) => (
             <div key={appeal.id} style={{ marginBottom: 24 }}>
               <Divider>{appeal.courseName}</Divider>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 24,
+                }}
+              >
                 <div>
                   <p>
                     <strong>原始成绩：</strong> {appeal.originalScore} 分
@@ -241,14 +264,20 @@ export const AppealPage = () => {
                   <p>
                     <strong>申诉原因：</strong>
                   </p>
-                  <p style={{ background: '#fafafa', padding: 12, borderRadius: 4 }}>
+                  <p
+                    style={{
+                      background: "#fafafa",
+                      padding: 12,
+                      borderRadius: 4,
+                    }}
+                  >
                     {appeal.appealReason}
                   </p>
                 </div>
 
                 <div>
                   <p>
-                    <strong>审核状态：</strong>{' '}
+                    <strong>审核状态：</strong>{" "}
                     <Tag color={statusColorMap[appeal.status]}>
                       {statusTextMap[appeal.status]}
                     </Tag>
@@ -265,8 +294,14 @@ export const AppealPage = () => {
                   )}
                   {appeal.newScore && (
                     <p>
-                      <strong>调整后成绩：</strong>{' '}
-                      <span style={{ color: '#52c41a', fontSize: 16, fontWeight: 'bold' }}>
+                      <strong>调整后成绩：</strong>{" "}
+                      <span
+                        style={{
+                          color: "#52c41a",
+                          fontSize: 16,
+                          fontWeight: "bold",
+                        }}
+                      >
                         {appeal.newScore} 分
                       </span>
                     </p>
@@ -277,7 +312,13 @@ export const AppealPage = () => {
                       <p>
                         <strong>审核意见：</strong>
                       </p>
-                      <p style={{ background: '#f0f5ff', padding: 12, borderRadius: 4 }}>
+                      <p
+                        style={{
+                          background: "#f0f5ff",
+                          padding: 12,
+                          borderRadius: 4,
+                        }}
+                      >
                         {appeal.reviewFeedback}
                       </p>
                     </>
@@ -300,15 +341,18 @@ export const AppealPage = () => {
           <Form.Item
             name="courseId"
             label="课程选择"
-            rules={[{ required: true, message: '请选择课程' }]}
+            rules={[{ required: true, message: "请选择课程" }]}
           >
-            <Select placeholder="请选择要申诉的课程" options={getCourseOptions()} />
+            <Select
+              placeholder="请选择要申诉的课程"
+              options={getCourseOptions()}
+            />
           </Form.Item>
 
           <Form.Item
             name="appealReason"
             label="申诉理由"
-            rules={[{ required: true, message: '请输入申诉理由' }]}
+            rules={[{ required: true, message: "请输入申诉理由" }]}
           >
             <Input.TextArea
               rows={4}
@@ -319,11 +363,25 @@ export const AppealPage = () => {
             />
           </Form.Item>
 
-          <div style={{ padding: 12, background: '#fafafa', borderRadius: 4, marginBottom: 16 }}>
-            <p style={{ margin: '0 0 8px 0', fontSize: 12, color: '#666' }}>
+          <div
+            style={{
+              padding: 12,
+              background: "#fafafa",
+              borderRadius: 4,
+              marginBottom: 16,
+            }}
+          >
+            <p style={{ margin: "0 0 8px 0", fontSize: 12, color: "#666" }}>
               <strong>注意事项：</strong>
             </p>
-            <ul style={{ margin: 0, paddingLeft: 20, fontSize: 12, color: '#666' }}>
+            <ul
+              style={{
+                margin: 0,
+                paddingLeft: 20,
+                fontSize: 12,
+                color: "#666",
+              }}
+            >
               <li>申诉应在成绩发布后30天内提出</li>
               <li>提供具体的申诉理由和依据</li>
               <li>教师将在7个工作日内进行审核</li>

@@ -14,6 +14,7 @@ export interface User {
 
 // 学生用户
 export interface Student extends User {
+  class: number;
   studentId: string;
   name: string;
   gender: 'male' | 'female';

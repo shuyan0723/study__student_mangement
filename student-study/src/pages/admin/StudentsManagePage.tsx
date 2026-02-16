@@ -39,6 +39,11 @@ export const StudentsManagePage = () => {
       key: 'major',
     },
     {
+      title:'班级',
+      dataIndex:'class',
+      key:'class'
+    },
+    {
       title: '联系方式',
       dataIndex: 'phone',
       key: 'phone',
@@ -72,6 +77,7 @@ export const StudentsManagePage = () => {
       gender: student.gender,
       college: student.college,
       major: student.major,
+      class:student.class,
       phone: student.phone,
       homeAddress: student.homeAddress,
       email: student.email,
@@ -146,6 +152,7 @@ export const StudentsManagePage = () => {
           form.resetFields();
         }}
         footer={null}
+        style={{top:1}}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
@@ -192,6 +199,14 @@ export const StudentsManagePage = () => {
             rules={[{ required: true, message: '请输入专业' }]}
           >
             <Input placeholder="请输入专业" />
+          </Form.Item>
+
+           <Form.Item
+            name="class"
+            label="班级"
+            rules={[{ required: true, message: '请输入班级' }]}
+          >
+            <Input placeholder="请输入班级" />
           </Form.Item>
 
           <Form.Item

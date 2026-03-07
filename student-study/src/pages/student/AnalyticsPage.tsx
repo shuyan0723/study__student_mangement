@@ -46,7 +46,7 @@ export const AnalyticsPage = () => {
     const excellentRate = ((studentGrades.filter((g) => g.score >= 85).length / studentGrades.length) * 100).toFixed(1);
 
     return {
-      avgScore: avgScore.toFixed(2),
+      avgScore: avgScore.toFixed(1),
       highestScore,
       lowestScore,
       gradeDistribution,

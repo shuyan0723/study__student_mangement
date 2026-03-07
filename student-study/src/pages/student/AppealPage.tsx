@@ -97,7 +97,7 @@ export const AppealPage = () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const selectedGrade = grades.find(
-        (g) => g.studentId === user?.id && g.courseId === values.courseId,
+        (g) => g.studentId === user?.id && g.courseId === values.courseId
       );
 
       if (!selectedGrade) {

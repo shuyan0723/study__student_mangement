@@ -57,6 +57,7 @@ const mockStudents: Student[] = [
     gender: 'male',
     college: '计算机学院',
     major: '计算机科学与技术',
+    class:22201,
     homeAddress: '北京市海淀区',
   },
   {
@@ -71,6 +72,7 @@ const mockStudents: Student[] = [
     gender: 'female',
     college: '计算机学院',
     major: '软件工程',
+    class:22202,
     homeAddress: '上海市浦东新区',
   },
   {
@@ -85,6 +87,7 @@ const mockStudents: Student[] = [
     gender: 'male',
     college: '计算机学院',
     major: '数据科学与大数据技术',
+    class:22203,
     homeAddress: '广州市天河区',
   },
   {
@@ -99,6 +102,7 @@ const mockStudents: Student[] = [
     gender: 'female',
     college: '计算机学院',
     major: '计算机科学与技术',
+    class:22203,
     homeAddress: '深圳市南山区',
   },
 ];

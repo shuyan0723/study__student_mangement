@@ -225,7 +225,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 };
 
 // Logout controller
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (_req: Request, res: Response) => {
   try {
     // Implementation would go here
     // For now, return a placeholder response

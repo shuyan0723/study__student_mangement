@@ -14,10 +14,9 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "db:create": "node scripts/createDb.js",
-    "db:migrate": "node scripts/migrate.js",
-    "db:seed": "node scripts/seed.js",
-    "db:drop": "node scripts/dropDb.js"
+    "db:setup": "node scripts/setupDatabase.js",
+    "db:seed": "node scripts/seedData.js",
+    "db:init": "npm run db:setup && npm run db:seed"
   },
   "keywords": [
     "student",

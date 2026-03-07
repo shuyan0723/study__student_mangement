@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import 'dotenv/config';
-import { sequelize, testConnection, syncDatabase } from './config/database';
+import { testConnection, syncDatabase } from './config/database';
 
 const app: Express = express();
 
@@ -40,9 +40,38 @@ initializeDatabase();
 // Health check
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
-    status: 'ok',
-    timestamp: new Date(),
-    version: '1.0.0'
+    success: true,
+    data: {
+      status: 'ok',
+      timestamp: new Date(),
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development'
+    },
+    message: 'Server is running'
+  });
+});
+
+// API info
+app.get('/api', (_req: Request, res: Response) => {
+  res.json({
+    success: true,
+    data: {
+      name: 'Student Grade Management System API',
+      version: '1.0.0',
+      description: 'Backend API for student grade management system',
+      endpoints: {
+        health: '/api/health',
+        auth: '/api/auth',
+        students: '/api/students',
+        teachers: '/api/teachers',
+        courses: '/api/courses',
+        grades: '/api/grades',
+        messages: '/api/messages',
+        appeals: '/api/appeals'
+      },
+      documentation: 'See README.md for detailed API documentation'
+    },
+    message: 'Welcome to Student Grade Management System API'
   });
 });
 
@@ -51,7 +80,7 @@ import authRoutes from './routes/authRoutes';
 import studentRoutes from './routes/studentRoutes';
 import courseRoutes from './routes/courseRoutes';
 import gradeRoutes from './routes/gradeRoutes';
-// import teacherRoutes from './routes/teacherRoutes';
+import teacherRoutes from './routes/teacherRoutes';
 import messageRoutes from './routes/messageRoutes';
 import appealRoutes from './routes/appealRoutes';
 
@@ -69,7 +98,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/grades', gradeRoutes);
 
 // Teachers routes
-// app.use('/api/teachers', teacherRoutes);
+app.use('/api/teachers', teacherRoutes);
 
 // Messages routes
 app.use('/api/messages', messageRoutes);

@@ -1,16 +1,20 @@
-import { useState } from 'react';
-import { Card, Input, Button, Empty, Avatar, Space, Form, message } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { useState, useEffect } from 'react';
+import { Card, Input, Button, Empty, Avatar, Space, Form, message, Badge, Tooltip } from 'antd';
+import { SendOutlined, VideoCameraOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
+import { useWebRTC } from '../../hooks/useWebRTC';
+import VideoCallModal from '../../components/VideoCallModal';
 import './StudentPage.less';
 
 export const StudentMessagesPage = () => {
   const { user } = useAuthStore();
   const { messages, addMessage } = useDataStore();
+  const { startCall, currentCall, isConnected } = useWebRTC();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<string>('');
+  const [showVideoModal, setShowVideoModal] = useState(false);
 
   const teacherList = [
     { id: 'teacher_001', name: '王教授' },
@@ -18,7 +22,7 @@ export const StudentMessagesPage = () => {
   ];
 
   const userMessages = messages.filter(
-    (m) => (m.senderId === user?.id || m.receiverId === user?.id) && 
+    (m) => (m.senderId === user?.id || m.receiverId === user?.id) &&
             (selectedTeacher === '' || m.senderId === selectedTeacher || m.receiverId === selectedTeacher)
   );
 
@@ -50,6 +54,37 @@ export const StudentMessagesPage = () => {
     }
   };
 
+  const handleVideoCall = async () => {
+    if (!selectedTeacher) {
+      message.error('请先选择要联系的教师');
+      return;
+    }
+
+    if (!isConnected) {
+      message.error('网络未连接，请稍后重试');
+      return;
+    }
+
+    try {
+      const teacher = teacherList.find(t => t.id === selectedTeacher);
+      if (teacher) {
+        await startCall(teacher.id, teacher.name, 'teacher');
+        setShowVideoModal(true);
+      }
+    } catch (error: any) {
+      message.error('发起视频通话失败: ' + error.message);
+    }
+  };
+
+  // Handle incoming calls
+  useEffect(() => {
+    if (currentCall && currentCall.isIncoming) {
+      setShowVideoModal(true);
+    }
+  }, [currentCall]);
+
+  const selectedTeacherData = teacherList.find(t => t.id === selectedTeacher);
+
   return (
     <div className="student-page">
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 24 }}>
@@ -67,6 +102,9 @@ export const StudentMessagesPage = () => {
                   backgroundColor: selectedTeacher === teacher.id ? '#f0f5ff' : 'transparent',
                   border: selectedTeacher === teacher.id ? '2px solid #1890ff' : '1px solid #f0f0f0',
                   transition: 'all 0.3s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <Space>
@@ -75,6 +113,21 @@ export const StudentMessagesPage = () => {
                   </Avatar>
                   <div>{teacher.name}</div>
                 </Space>
+                {selectedTeacher === teacher.id && (
+                  <Tooltip title="视频通话">
+                    <Button
+                      type="primary"
+                      icon={<VideoCameraOutlined />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleVideoCall();
+                      }}
+                      size="small"
+                    >
+                      视频通话
+                    </Button>
+                  </Tooltip>
+                )}
               </div>
             ))}
           </Space>
@@ -82,7 +135,18 @@ export const StudentMessagesPage = () => {
 
         {/* 右侧：消息列表和输入框 */}
         <Card
-          title={selectedTeacher ? `与${teacherList.find(t => t.id === selectedTeacher)?.name}交流` : '选择教师开始交流'}
+          title={selectedTeacher ? `与${selectedTeacherData?.name}交流` : '选择教师开始交流'}
+          extra={
+            selectedTeacher && (
+              <Button
+                type="primary"
+                icon={<VideoCameraOutlined />}
+                onClick={handleVideoCall}
+              >
+                视频通话
+              </Button>
+            )
+          }
         >
           {selectedTeacher ? (
             <>
@@ -154,6 +218,12 @@ export const StudentMessagesPage = () => {
           )}
         </Card>
       </div>
+
+      {/* Video Call Modal */}
+      <VideoCallModal
+        visible={showVideoModal}
+        onClose={() => setShowVideoModal(false)}
+      />
     </div>
   );
 };

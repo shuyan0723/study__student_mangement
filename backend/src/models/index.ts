@@ -6,6 +6,7 @@ import Course from './Course';
 import Grade from './Grade';
 import Message from './Message';
 import Appeal from './Appeal';
+import CallHistory from './CallHistory';
 
 // Export all models
 export {
@@ -15,7 +16,8 @@ export {
   Course,
   Grade,
   Message,
-  Appeal
+  Appeal,
+  CallHistory
 };
 
 export default {
@@ -25,5 +27,6 @@ export default {
   Course,
   Grade,
   Message,
-  Appeal
+  Appeal,
+  CallHistory
 };

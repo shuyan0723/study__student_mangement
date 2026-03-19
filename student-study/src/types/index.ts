@@ -117,12 +117,15 @@ declare module 'react-router' {
   interface PathRouteProps {
     navName?: string;
   }
-  
+
   interface LayoutRouteProps {
     navName?: string;
   }
-  
+
   interface IndexRouteProps {
     navName?: string;
   }
 }
+
+// Export WebRTC types
+export type { CallStatus, WebRTCCall, CallStatistics, MediaConstraints } from './webrtc';

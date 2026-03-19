@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import app from './app';
+import WebSocketServer from './websocket/websocketServer';
 
 const PORT = parseInt(process.env.PORT || '3000');
 const HOST = process.env.HOST || 'localhost';
@@ -10,6 +11,10 @@ const server = app.listen(PORT, HOST as string, () => {
   console.log(`💚 Health Check: http://${HOST}:${PORT}/api/health`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
+
+// Initialize WebSocket server
+const wsServer = new WebSocketServer(server);
+console.log(`📡 WebSocket server initialized`);
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err: Error) => {

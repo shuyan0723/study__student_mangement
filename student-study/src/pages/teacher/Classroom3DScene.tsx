@@ -1,27 +1,178 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { Card, Statistic, Row, Col, Tag, List, Avatar, Tooltip, Badge } from 'antd';
-import { 
-  TeamOutlined, 
-  RiseOutlined, 
-  MessageOutlined, 
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Card, Statistic, Row, Col, Tag, List, Avatar, Tooltip, Badge, Button, Modal, Descriptions, Progress, Space, Alert, Divider } from 'antd';
+import {
+  TeamOutlined,
+  RiseOutlined,
+  MessageOutlined,
   EyeOutlined,
-  CheckCircleOutlined,
-  UserOutlined
+  UserOutlined,
+  CameraOutlined,
+  FullscreenOutlined,
+  FileTextOutlined,
+  CommentOutlined,
+  WarningOutlined
 } from '@ant-design/icons';
 
-interface StudentNode {
-  id: string;
+// 学生活动状态类型
+export type StudentActivityType = 'listening' | 'questioning' | 'note_taking' | 'distracted' | 'discussing' | 'confused' | 'understanding';
+
+// 学生活动数据接口
+export interface StudentActivity {
+  studentId: string;
   name: string;
-  participation: number;
-  lastActive: string;
+  studentIdNumber: string;
+  currentActivity: StudentActivityType;
+  activityStartTime: string;
+  activityDuration: number;
+  participationScore: number;
+  questionCount: number;
+  noteTakingCount: number;
+  distractedCount: number;
+  position: { x: number; y: number; z: number };
   status: 'active' | 'idle' | 'away';
+  lastActive: string;
 }
 
 const Classroom3DScene: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
+  const raycasterRef = useRef<THREE.Raycaster | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+
   const [isClient, setIsClient] = useState(false);
-  // const [selectedStudent, setSelectedStudent] = useState<StudentNode | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<StudentActivity | null>(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [viewMode, setViewMode] = useState<'free' | 'front' | 'side' | 'top' | 'teacher'>('free');
+
+  // 模拟学生数据
+  const [studentActivities, setStudentActivities] = useState<StudentActivity[]>([
+    {
+      studentId: '1',
+      name: '张三',
+      studentIdNumber: '2024001',
+      currentActivity: 'listening',
+      activityStartTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+      activityDuration: 15,
+      participationScore: 85,
+      questionCount: 3,
+      noteTakingCount: 12,
+      distractedCount: 2,
+      position: { x: -9, y: 1.5, z: -6 },
+      status: 'active',
+      lastActive: '刚刚'
+    },
+    {
+      studentId: '2',
+      name: '李四',
+      studentIdNumber: '2024002',
+      currentActivity: 'questioning',
+      activityStartTime: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+      activityDuration: 2,
+      participationScore: 92,
+      questionCount: 8,
+      noteTakingCount: 15,
+      distractedCount: 1,
+      position: { x: -3, y: 1.5, z: -6 },
+      status: 'active',
+      lastActive: '刚刚'
+    },
+    {
+      studentId: '3',
+      name: '王五',
+      studentIdNumber: '2024003',
+      currentActivity: 'note_taking',
+      activityStartTime: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
+      activityDuration: 8,
+      participationScore: 68,
+      questionCount: 2,
+      noteTakingCount: 20,
+      distractedCount: 5,
+      position: { x: 3, y: 1.5, z: -6 },
+      status: 'idle',
+      lastActive: '5分钟前'
+    },
+    {
+      studentId: '4',
+      name: '赵六',
+      studentIdNumber: '2024004',
+      currentActivity: 'discussing',
+      activityStartTime: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
+      activityDuration: 3,
+      participationScore: 78,
+      questionCount: 4,
+      noteTakingCount: 10,
+      distractedCount: 3,
+      position: { x: 9, y: 1.5, z: -6 },
+      status: 'active',
+      lastActive: '刚刚'
+    },
+    {
+      studentId: '5',
+      name: '钱七',
+      studentIdNumber: '2024005',
+      currentActivity: 'understanding',
+      activityStartTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+      activityDuration: 5,
+      participationScore: 95,
+      questionCount: 6,
+      noteTakingCount: 18,
+      distractedCount: 0,
+      position: { x: -9, y: 1.5, z: 6 },
+      status: 'active',
+      lastActive: '刚刚'
+    },
+    {
+      studentId: '6',
+      name: '孙八',
+      studentIdNumber: '2024006',
+      currentActivity: 'distracted',
+      activityStartTime: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+      activityDuration: 10,
+      participationScore: 45,
+      questionCount: 0,
+      noteTakingCount: 2,
+      distractedCount: 8,
+      position: { x: -3, y: 1.5, z: 6 },
+      status: 'away',
+      lastActive: '15分钟前'
+    },
+    {
+      studentId: '7',
+      name: '周九',
+      studentIdNumber: '2024007',
+      currentActivity: 'confused',
+      activityStartTime: new Date(Date.now() - 4 * 60 * 1000).toISOString(),
+      activityDuration: 4,
+      participationScore: 88,
+      questionCount: 5,
+      noteTakingCount: 14,
+      distractedCount: 2,
+      position: { x: 3, y: 1.5, z: 6 },
+      status: 'active',
+      lastActive: '刚刚'
+    },
+    {
+      studentId: '8',
+      name: '吴十',
+      studentIdNumber: '2024008',
+      currentActivity: 'listening',
+      activityStartTime: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+      activityDuration: 20,
+      participationScore: 72,
+      questionCount: 2,
+      noteTakingCount: 11,
+      distractedCount: 3,
+      position: { x: 9, y: 1.5, z: 6 },
+      status: 'idle',
+      lastActive: '3分钟前'
+    }
+  ]);
+
   const [interactionStats] = useState({
     totalInteractions: 156,
     activeStudents: 28,
@@ -33,12 +184,63 @@ const Classroom3DScene: React.FC = () => {
     setIsClient(true);
   }, []);
 
+  // 获取活动状态配置
+  const getActivityConfig = (activity: StudentActivityType) => {
+    const configs = {
+      listening: { color: 0x52c41a, icon: '👂', label: '正在听课', description: '专注听讲中' },
+      questioning: { color: 0x1890ff, icon: '🙋', label: '正在提问', description: '举手提问' },
+      note_taking: { color: 0xfaad14, icon: '✍️', label: '正在做笔记', description: '记录重点' },
+      distracted: { color: 0xff4d4f, icon: '😴', label: '走神/分心', description: '需要提醒' },
+      discussing: { color: 0x722ed1, icon: '💬', label: '小组讨论', description: '与同学交流' },
+      confused: { color: 0xfa8c16, icon: '❓', label: '有疑惑', description: '需要帮助' },
+      understanding: { color: 0x13c2c2, icon: '✅', label: '理解点头', description: '明白了' }
+    };
+    return configs[activity];
+  };
+
+  // 视角切换
+  const changeView = useCallback((mode: 'free' | 'front' | 'side' | 'top' | 'teacher') => {
+    if (!cameraRef.current || !controlsRef.current) return;
+
+    setViewMode(mode);
+
+    switch (mode) {
+      case 'front':
+        cameraRef.current.position.set(0, 10, 30);
+        break;
+      case 'side':
+        cameraRef.current.position.set(30, 10, 0);
+        break;
+      case 'top':
+        cameraRef.current.position.set(0, 35, 0);
+        break;
+      case 'teacher':
+        cameraRef.current.position.set(0, 5, -15);
+        break;
+      case 'free':
+        cameraRef.current.position.set(0, 20, 25);
+        break;
+    }
+
+    cameraRef.current.lookAt(0, 0, 0);
+    controlsRef.current.update();
+  }, []);
+
+  // 处理学生点击
+  const handleStudentClick = useCallback((student: StudentActivity) => {
+    setSelectedStudent(student);
+    setDetailModalVisible(true);
+  }, []);
+
   useEffect(() => {
     if (!isClient || !containerRef.current) return;
 
+    // 初始化场景
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a2e);
+    scene.background = new THREE.Color(0xf0f5ff);
+    sceneRef.current = scene;
 
+    // 初始化相机
     const camera = new THREE.PerspectiveCamera(
       60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
@@ -47,217 +249,365 @@ const Classroom3DScene: React.FC = () => {
     );
     camera.position.set(0, 20, 25);
     camera.lookAt(0, 0, 0);
+    cameraRef.current = camera;
 
+    // 初始化渲染器
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    // 初始化控制器
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.minDistance = 10;
+    controls.maxDistance = 60;
+    controls.maxPolarAngle = Math.PI / 2;
+    controlsRef.current = controls;
+
+    // 初始化射线检测器
+    const raycaster = new THREE.Raycaster();
+    raycaster.params.Points = { threshold: 0.5 };
+    raycasterRef.current = raycaster;
+
+    // 添加灯光
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 20, 10);
+    directionalLight.position.set(20, 30, 20);
     directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 100;
+    directionalLight.shadow.camera.left = -30;
+    directionalLight.shadow.camera.right = 30;
+    directionalLight.shadow.camera.top = 30;
+    directionalLight.shadow.camera.bottom = -30;
     scene.add(directionalLight);
 
-    const pointLight1 = new THREE.PointLight(0x1890ff, 1, 50);
-    pointLight1.position.set(-10, 10, -10);
+    const pointLight1 = new THREE.PointLight(0x1890ff, 0.5, 50);
+    pointLight1.position.set(-15, 15, -15);
     scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0x52c41a, 1, 50);
-    pointLight2.position.set(10, 10, 10);
+    const pointLight2 = new THREE.PointLight(0x52c41a, 0.5, 50);
+    pointLight2.position.set(15, 15, 15);
     scene.add(pointLight2);
 
-    const floorGeometry = new THREE.PlaneGeometry(40, 30);
-    const floorMaterial = new THREE.MeshPhongMaterial({ 
-      color: 0x16213e,
-      side: THREE.DoubleSide 
+    // 创建教室地板
+    const floorGeometry = new THREE.PlaneGeometry(50, 40);
+    const floorMaterial = new THREE.MeshPhongMaterial({
+      color: 0xe8e8e8,
+      side: THREE.DoubleSide
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    const gridHelper = new THREE.GridHelper(40, 20, 0x0f3460, 0x0f3460);
+    const gridHelper = new THREE.GridHelper(50, 25, 0xcccccc, 0xe8e8e8);
     gridHelper.position.y = 0.01;
     scene.add(gridHelper);
 
-    const studentNodes: StudentNode[] = [
-      { id: '1', name: '张三', participation: 85, lastActive: '刚刚', status: 'active' },
-      { id: '2', name: '李四', participation: 92, lastActive: '刚刚', status: 'active' },
-      { id: '3', name: '王五', participation: 68, lastActive: '5分钟前', status: 'idle' },
-      { id: '4', name: '赵六', participation: 78, lastActive: '刚刚', status: 'active' },
-      { id: '5', name: '钱七', participation: 95, lastActive: '刚刚', status: 'active' },
-      { id: '6', name: '孙八', participation: 45, lastActive: '15分钟前', status: 'away' },
-      { id: '7', name: '周九', participation: 88, lastActive: '刚刚', status: 'active' },
-      { id: '8', name: '吴十', participation: 72, lastActive: '3分钟前', status: 'idle' },
-    ];
+    // 创建教室墙壁
+    const wallMaterial = new THREE.MeshPhongMaterial({
+      color: 0xf5f5f5,
+      side: THREE.DoubleSide
+    });
 
-    const seats: THREE.Mesh[] = [];
-    const connections: THREE.Line[] = [];
-    const studentMeshes: { mesh: THREE.Mesh; student: StudentNode }[] = [];
+    // 后墙（带黑板）
+    const backWallGeometry = new THREE.PlaneGeometry(50, 12);
+    const backWall = new THREE.Mesh(backWallGeometry, wallMaterial);
+    backWall.position.set(0, 6, -20);
+    scene.add(backWall);
 
-    const rowCount = 2;
-    const colCount = 4;
-    const spacing = 6;
+    // 黑板
+    const blackboardGeometry = new THREE.PlaneGeometry(20, 4);
+    const blackboardMaterial = new THREE.MeshPhongMaterial({ color: 0x2d4a3d });
+    const blackboard = new THREE.Mesh(blackboardGeometry, blackboardMaterial);
+    blackboard.position.set(0, 5, -19.9);
+    scene.add(blackboard);
 
-    studentNodes.forEach((student, index) => {
-      const row = Math.floor(index / colCount);
-      const col = index % colCount;
-      const x = (col - (colCount - 1) / 2) * spacing;
-      const z = (row - (rowCount - 1) / 2) * spacing * 1.5;
+    // 侧墙
+    const sideWallGeometry = new THREE.PlaneGeometry(40, 12);
+    const leftWall = new THREE.Mesh(sideWallGeometry, wallMaterial);
+    leftWall.position.set(-25, 6, 0);
+    leftWall.rotation.y = Math.PI / 2;
+    scene.add(leftWall);
 
-      const seatGeometry = new THREE.BoxGeometry(3, 0.3, 2.5);
-      const seatMaterial = new THREE.MeshPhongMaterial({
-        color: student.status === 'active' ? 0x1890ff : 
-               student.status === 'idle' ? 0xfaad14 : 0x8c8c8c,
-        transparent: true,
-        opacity: 0.6
-      });
-      const seat = new THREE.Mesh(seatGeometry, seatMaterial);
-      seat.position.set(x, 0.15, z);
-      seat.receiveShadow = true;
-      scene.add(seat);
-      seats.push(seat);
+    const rightWall = new THREE.Mesh(sideWallGeometry, wallMaterial);
+    rightWall.position.set(25, 6, 0);
+    rightWall.rotation.y = -Math.PI / 2;
+    scene.add(rightWall);
 
-      const sphereGeometry = new THREE.SphereGeometry(0.8, 32, 32);
-      const color = student.status === 'active' ? 0x52c41a :
-                    student.status === 'idle' ? 0xfaad14 : 0xff4d4f;
-      const sphereMaterial = new THREE.MeshPhongMaterial({
-        color: color,
-        emissive: color,
+    // 前墙（带门和窗）
+    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(50, 12), wallMaterial);
+    frontWall.position.set(0, 6, 20);
+    scene.add(frontWall);
+
+    // 门
+    const doorGeometry = new THREE.PlaneGeometry(6, 8);
+    const doorMaterial = new THREE.MeshPhongMaterial({ color: 0x8b4513 });
+    const door = new THREE.Mesh(doorGeometry, doorMaterial);
+    door.position.set(10, 4, 19.9);
+    scene.add(door);
+
+    // 窗户
+    const windowGeometry = new THREE.PlaneGeometry(8, 4);
+    const windowMaterial = new THREE.MeshPhongMaterial({
+      color: 0x87ceeb,
+      transparent: true,
+      opacity: 0.6
+    });
+
+    for (let i = -2; i <= 2; i++) {
+      if (i === 1) continue; // 跳过门的位置
+      const windowMesh = new THREE.Mesh(windowGeometry, windowMaterial);
+      windowMesh.position.set(i * 8, 6, 19.9);
+      scene.add(windowMesh);
+    }
+
+    // 教师讲台
+    const podiumGeometry = new THREE.BoxGeometry(8, 1, 3);
+    const podiumMaterial = new THREE.MeshPhongMaterial({ color: 0x722ed1 });
+    const podium = new THREE.Mesh(podiumGeometry, podiumMaterial);
+    podium.position.set(0, 0.5, -18);
+    podium.castShadow = true;
+    podium.receiveShadow = true;
+    scene.add(podium);
+
+    // 教师模型
+    const teacherGeometry = new THREE.CylinderGeometry(0.8, 1, 2.5, 32);
+    const teacherMaterial = new THREE.MeshPhongMaterial({
+      color: 0xeb2f96,
+      emissive: 0xeb2f96,
+      emissiveIntensity: 0.2
+    });
+    const teacher = new THREE.Mesh(teacherGeometry, teacherMaterial);
+    teacher.position.set(0, 2.25, -18);
+    teacher.castShadow = true;
+    scene.add(teacher);
+
+    // 创建学生课桌椅和模型
+    const studentMeshes: THREE.Mesh[] = [];
+    const studentActivityMeshes: { mesh: THREE.Mesh; student: StudentActivity }[] = [];
+
+    studentActivities.forEach((student) => {
+      const { x, y, z } = student.position;
+
+      // 课桌
+      const deskGeometry = new THREE.BoxGeometry(3, 0.8, 2);
+      const deskMaterial = new THREE.MeshPhongMaterial({ color: 0x8d6e63 });
+      const desk = new THREE.Mesh(deskGeometry, deskMaterial);
+      desk.position.set(x, 0.4, z);
+      desk.castShadow = true;
+      desk.receiveShadow = true;
+      scene.add(desk);
+
+      // 椅子
+      const chairGeometry = new THREE.BoxGeometry(2.5, 0.2, 2);
+      const chairMaterial = new THREE.MeshPhongMaterial({ color: 0x5d4037 });
+      const chair = new THREE.Mesh(chairGeometry, chairMaterial);
+      chair.position.set(x, 0.8, z + 2);
+      chair.castShadow = true;
+      scene.add(chair);
+
+      // 椅子背
+      const chairBackGeometry = new THREE.BoxGeometry(2.5, 2, 0.2);
+      const chairBack = new THREE.Mesh(chairBackGeometry, chairMaterial);
+      chairBack.position.set(x, 1.8, z + 3);
+      chairBack.castShadow = true;
+      scene.add(chairBack);
+
+      // 学生模型（根据活动状态显示不同颜色和动画）
+      const activityConfig = getActivityConfig(student.currentActivity);
+      const studentGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+      const studentMaterial = new THREE.MeshPhongMaterial({
+        color: activityConfig.color,
+        emissive: activityConfig.color,
         emissiveIntensity: 0.3,
         transparent: true,
         opacity: 0.9
       });
-      const studentSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-      studentSphere.position.set(x, 1.5, z);
-      studentSphere.castShadow = true;
-      scene.add(studentSphere);
-      studentMeshes.push({ mesh: studentSphere, student: student });
+      const studentMesh = new THREE.Mesh(studentGeometry, studentMaterial);
+      studentMesh.position.set(x, y, z);
+      studentMesh.castShadow = true;
+      studentMesh.userData = { student }; // 存储学生数据用于点击检测
+      scene.add(studentMesh);
+      studentMeshes.push(studentMesh);
+      studentActivityMeshes.push({ mesh: studentMesh, student });
 
-      const indicatorGeometry = new THREE.ConeGeometry(0.3, 0.6, 8);
-      const indicatorMaterial = new THREE.MeshPhongMaterial({
-        color: 0x1890ff,
-        emissive: 0x1890ff,
-        emissiveIntensity: 0.5
-      });
-      const indicator = new THREE.Mesh(indicatorGeometry, indicatorMaterial);
-      indicator.position.set(x, 2.8, z);
-      scene.add(indicator);
+      // 活动图标（使用文字精灵）
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fillRect(0, 0, 128, 128);
+        ctx.font = '80px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(activityConfig.icon, 64, 64);
+      }
 
-      const pulseGeometry = new THREE.RingGeometry(1.2, 1.5, 32);
-      const pulseMaterial = new THREE.MeshBasicMaterial({
-        color: 0x52c41a,
-        transparent: true,
-        opacity: 0.6,
-        side: THREE.DoubleSide
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMaterial = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true
       });
-      const pulse = new THREE.Mesh(pulseGeometry, pulseMaterial);
-      pulse.rotation.x = -Math.PI / 2;
-      pulse.position.set(x, 0.05, z); 
-      scene.add(pulse);
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.position.set(x, 3, z);
+      sprite.scale.set(2, 2, 1);
+      scene.add(sprite);
     });
 
-    for (let i = 0; i < studentMeshes.length; i++) {
-      for (let j = i + 1; j < studentMeshes.length; j++) {
-        if (Math.random() > 0.5) {
+    // 学生之间的互动连线
+    for (let i = 0; i < studentActivities.length; i++) {
+      for (let j = i + 1; j < studentActivities.length; j++) {
+        const student1 = studentActivities[i];
+        const student2 = studentActivities[j];
+
+        // 如果两个学生都在讨论或有互动，显示连线
+        if (student1.currentActivity === 'discussing' && student2.currentActivity === 'discussing') {
           const points = [
-            studentMeshes[i].mesh.position.clone(),
-            studentMeshes[j].mesh.position.clone()
+            new THREE.Vector3(student1.position.x, student1.position.y, student1.position.z),
+            new THREE.Vector3(student2.position.x, student2.position.y, student2.position.z)
           ];
           const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-          const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0x1890ff,
+          const lineMaterial = new THREE.LineDashedMaterial({
+            color: 0x722ed1,
+            dashSize: 1,
+            gapSize: 0.5,
             transparent: true,
-            opacity: 0.3
+            opacity: 0.6
           });
           const line = new THREE.Line(lineGeometry, lineMaterial);
+          line.computeLineDistances();
           scene.add(line);
-          connections.push(line);
         }
       }
     }
 
-    const teacherDeskGeometry = new THREE.BoxGeometry(6, 0.5, 2);
-    const teacherDeskMaterial = new THREE.MeshPhongMaterial({ color: 0x722ed1 });
-    const teacherDesk = new THREE.Mesh(teacherDeskGeometry, teacherDeskMaterial);
-    teacherDesk.position.set(0, 0.25, -10);
-    teacherDesk.castShadow = true;
-    teacherDesk.receiveShadow = true;
-    scene.add(teacherDesk);
+    // 鼠标点击事件
+    const onMouseClick = (event: MouseEvent) => {
+      if (!containerRef.current || !cameraRef.current || !raycasterRef.current) return;
 
-    const teacherGeometry = new THREE.CylinderGeometry(0.8, 0.8, 2, 32);
-    const teacherMaterial = new THREE.MeshPhongMaterial({ color: 0xeb2f96 });
-    const teacher = new THREE.Mesh(teacherGeometry, teacherMaterial);
-    teacher.position.set(0, 1, -10);
-    teacher.castShadow = true;
-    scene.add(teacher);
+      const rect = containerRef.current.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1
+      );
 
-    const animationObjects: { 
-      mesh: THREE.Mesh; 
-      baseY: number; 
-      speed: number; 
-      offset: number;
-    }[] = [];
+      raycasterRef.current.setFromCamera(mouse, cameraRef.current);
+      const intersects = raycasterRef.current.intersectObjects(studentMeshes);
 
-    studentMeshes.forEach((item, index) => {
-      animationObjects.push({
-        mesh: item.mesh,
-        baseY: item.mesh.position.y,
-        speed: 0.5 + Math.random() * 0.5,
-        offset: index * 0.5
-      });
-    });
+      if (intersects.length > 0) {
+        const clickedMesh = intersects[0].object as THREE.Mesh;
+        const studentData = clickedMesh.userData.student as StudentActivity;
+        if (studentData) {
+          handleStudentClick(studentData);
+        }
+      }
+    };
 
-    let animationId: number;
+    containerRef.current.addEventListener('click', onMouseClick);
+
+    // 动画循环
     const animate = () => {
-      animationId = requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate);
 
       const time = Date.now() * 0.001;
 
-      animationObjects.forEach(obj => {
-        obj.mesh.position.y = obj.baseY + Math.sin(time * obj.speed + obj.offset) * 0.1;
+      // 学生动画效果
+      studentActivityMeshes.forEach((item, index) => {
+        const { mesh, student } = item;
+        const activityConfig = getActivityConfig(student.currentActivity);
+
+        // 根据不同活动状态显示不同动画
+        switch (student.currentActivity) {
+          case 'questioning':
+            // 举手上下运动
+            mesh.position.y = 1.5 + Math.sin(time * 3) * 0.3;
+            break;
+          case 'note_taking':
+            // 轻微晃动表示写字
+            mesh.position.x = student.position.x + Math.sin(time * 5) * 0.1;
+            break;
+          case 'distracted':
+            // 低垂状态
+            mesh.position.y = 1.5 + Math.sin(time * 0.5) * 0.1;
+            mesh.rotation.x = Math.sin(time * 0.3) * 0.2;
+            break;
+          case 'understanding':
+            // 点头动作
+            mesh.rotation.x = Math.sin(time * 2) * 0.2;
+            break;
+          case 'confused':
+            // 左右摇头
+            mesh.rotation.z = Math.sin(time * 1.5) * 0.15;
+            break;
+          case 'listening':
+          default:
+            // 正常呼吸效果
+            mesh.position.y = 1.5 + Math.sin(time + index) * 0.05;
+            break;
+        }
       });
 
-      scene.rotation.y = Math.sin(time * 0.1) * 0.1;
-
+      controls.update();
       renderer.render(scene, camera);
     };
 
     animate();
 
+    // 处理窗口大小变化
     const handleResize = () => {
-      if (!containerRef.current) return;
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      if (!containerRef.current || !cameraRef.current || !rendererRef.current) return;
+      cameraRef.current.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
     };
 
     window.addEventListener('resize', handleResize);
 
+    // 清理函数
     return () => {
       window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationId);
+      containerRef.current?.removeEventListener('click', onMouseClick);
+
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+
+      controls.dispose();
+      renderer.dispose();
+
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      renderer.dispose();
     };
-  }, [isClient]);
+  }, [isClient, studentActivities, handleStudentClick]);
+
+  const handleResetView = () => {
+    changeView('free');
+  };
 
   if (!isClient) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '400px',
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         borderRadius: '8px'
       }}>
-        <span style={{ color: '#fff' }}>加载中...</span>
+        <span style={{ color: '#fff', fontSize: '16px' }}>加载中...</span>
       </div>
     );
   }
@@ -282,7 +632,7 @@ const Classroom3DScene: React.FC = () => {
               title="活跃学生"
               value={interactionStats.activeStudents}
               prefix={<TeamOutlined style={{ color: '#52c41a' }} />}
-              suffix="/ 32"
+              suffix={`/ ${studentActivities.length}`}
               valueStyle={{ color: '#52c41a' }}
             />
           </Card>
@@ -303,7 +653,7 @@ const Classroom3DScene: React.FC = () => {
             <Statistic
               title="提问数"
               value={interactionStats.questionsAsked}
-              prefix={<MessageOutlined style={{ color: '#722ed1' }} />}
+              prefix={<CommentOutlined style={{ color: '#722ed1' }} />}
               suffix="个"
               valueStyle={{ color: '#722ed1' }}
             />
@@ -313,7 +663,7 @@ const Classroom3DScene: React.FC = () => {
 
       <Row gutter={16}>
         <Col xs={24} lg={16}>
-          <Card 
+          <Card
             title={
               <span>
                 <TeamOutlined style={{ marginRight: 8 }} />
@@ -321,32 +671,86 @@ const Classroom3DScene: React.FC = () => {
               </span>
             }
             extra={
-              <Tag color="blue">实时</Tag>
+              <Space wrap>
+                <Button
+                  icon={<CameraOutlined />}
+                  onClick={handleResetView}
+                  size="small"
+                >
+                  重置视角
+                </Button>
+                <Button
+                  icon={<FullscreenOutlined />}
+                  onClick={() => changeView('top')}
+                  size="small"
+                >
+                  俯视图
+                </Button>
+                <Button
+                  icon={<EyeOutlined />}
+                  onClick={() => changeView('teacher')}
+                  size="small"
+                >
+                  教师视角
+                </Button>
+              </Space>
             }
           >
-            <div 
-              ref={containerRef} 
-              style={{ 
-                width: '100%', 
+            <Alert
+              message="操作提示"
+              description="鼠标拖拽旋转视角 | 滚轮缩放 | 点击学生查看详情"
+              type="info"
+              showIcon
+              style={{ marginBottom: 16 }}
+            />
+
+            <div
+              ref={containerRef}
+              style={{
+                width: '100%',
                 height: '500px',
                 borderRadius: '8px',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                cursor: 'pointer'
               }}
             />
-            <div style={{ marginTop: 16, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              <Tooltip title="活跃学生">
-                <Tag color="green" icon={<CheckCircleOutlined />}>
-                  活跃 (参与度 ≥ 80%)
+
+            <Divider style={{ margin: '16px 0' }} />
+
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <Tooltip title="专注听讲中">
+                <Tag color="success" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  👂 正在听课
                 </Tag>
               </Tooltip>
-              <Tooltip title="较不活跃">
-                <Tag color="gold" icon={<MessageOutlined />}>
-                  较不活跃 (参与度 50-79%)
+              <Tooltip title="举手提问中">
+                <Tag color="processing" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  🙋 正在提问
                 </Tag>
               </Tooltip>
-              <Tooltip title="离开/离线">
-                <Tag color="red" icon={<EyeOutlined />}>
-                  离开 (参与度 &lt; 50%)
+              <Tooltip title="记录重点内容">
+                <Tag color="warning" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  ✍️ 正在做笔记
+                </Tag>
+              </Tooltip>
+              <Tooltip title="需要提醒">
+                <Tag color="error" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  😴 走神/分心
+                </Tag>
+              </Tooltip>
+              <Tooltip title="与同学交流讨论">
+                <Tag color="purple" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  💬 小组讨论
+                </Tag>
+              </Tooltip>
+              <Tooltip title="需要帮助">
+                <Tag color="orange" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  ❓ 有疑惑
+                </Tag>
+              </Tooltip>
+              <Tooltip title="理解了知识点">
+                <Tag color="cyan" style={{ fontSize: '14px', padding: '4px 12px' }}>
+                  ✅ 理解点头
                 </Tag>
               </Tooltip>
             </div>
@@ -358,123 +762,191 @@ const Classroom3DScene: React.FC = () => {
             title={
               <span>
                 <TeamOutlined style={{ marginRight: 8 }} />
-                学生参与详情
+                学生活动详情
               </span>
             }
             extra={<Badge status="processing" text="实时更新" />}
           >
             <List
               itemLayout="horizontal"
-              dataSource={[
-                { name: '钱七', participation: 95, status: 'active' },
-                { name: '李四', participation: 92, status: 'active' },
-                { name: '周九', participation: 88, status: 'active' },
-                { name: '张三', participation: 85, status: 'active' },
-                { name: '赵六', participation: 78, status: 'idle' },
-                { name: '吴十', participation: 72, status: 'idle' },
-                { name: '王五', participation: 68, status: 'idle' },
-                { name: '孙八', participation: 45, status: 'away' },
-              ]}
-              renderItem={(item) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar 
-                        style={{ 
-                          backgroundColor: item.status === 'active' ? '#52c41a' :
-                                          item.status === 'idle' ? '#faad14' : '#ff4d4f'
-                        }}
-                        icon={<UserOutlined />}
-                      />
-                    }
-                    title={
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{item.name}</span>
-                        <Tag 
-                          color={item.status === 'active' ? 'green' : 
-                                 item.status === 'idle' ? 'gold' : 'red'}
-                          style={{ margin: 0 }}
-                        >
-                          {item.participation}%
-                        </Tag>
-                      </div>
-                    }
-                    description={
-                      <div style={{ 
-                        width: '100%', 
-                        height: 4, 
-                        background: '#f0f0f0', 
-                        borderRadius: 2,
-                        marginTop: 4
-                      }}>
-                        <div style={{
-                          width: `${item.participation}%`,
-                          height: '100%',
-                          background: item.status === 'active' ? '#52c41a' :
-                                     item.status === 'idle' ? '#faad14' : '#ff4d4f',
-                          borderRadius: 2,
-                          transition: 'width 0.3s ease'
-                        }} />
-                      </div>
-                    }
-                  />
-                </List.Item>
-              )}
+              dataSource={studentActivities.sort((a, b) => b.participationScore - a.participationScore)}
+              renderItem={(student) => {
+                const activityConfig = getActivityConfig(student.currentActivity);
+                return (
+                  <List.Item
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleStudentClick(student)}
+                  >
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar
+                          style={{
+                            backgroundColor: `#${activityConfig.color.toString(16).padStart(6, '0')}`
+                          }}
+                          icon={<UserOutlined />}
+                        />
+                      }
+                      title={
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>{student.name}</span>
+                          <Tag
+                            color={
+                              student.currentActivity === 'distracted' ? 'red' :
+                              student.currentActivity === 'questioning' ? 'blue' :
+                              student.currentActivity === 'confused' ? 'orange' : 'green'
+                            }
+                            style={{ margin: 0 }}
+                          >
+                            {activityConfig.icon} {activityConfig.label}
+                          </Tag>
+                        </div>
+                      }
+                      description={
+                        <div>
+                          <div style={{
+                            width: '100%',
+                            height: 4,
+                            background: '#f0f0f0',
+                            borderRadius: 2,
+                            marginTop: 4
+                          }}>
+                            <div style={{
+                              width: `${student.participationScore}%`,
+                              height: '100%',
+                              background: `#${activityConfig.color.toString(16).padStart(6, '0')}`,
+                              borderRadius: 2,
+                              transition: 'width 0.3s ease'
+                            }} />
+                          </div>
+                          <div style={{ marginTop: 4, fontSize: 12, color: '#999' }}>
+                            参与度: {student.participationScore}% | {activityConfig.description}
+                          </div>
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                );
+              }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Row gutter={16} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={12}>
-          <Card title="课堂互动趋势" size="small">
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map((time) => (
-                <div key={time} style={{ textAlign: 'center' }}>
-                  <div style={{
-                    width: 40,
-                    height: `${60 + Math.random() * 40}px`,
-                    background: 'linear-gradient(180deg, #1890ff 0%, #52c41a 100%)',
-                    borderRadius: '4px 4px 0 0',
-                    marginBottom: 4
-                  }} />
-                  <span style={{ fontSize: 12, color: '#666' }}>{time}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title="课程互动统计" size="small">
-            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              {[
-                { id: '1', name: '数学', percentage: 85, color: '#1890ff' },
-                { id: '2', name: '语文', percentage: 78, color: '#52c41a' },
-                { id: '3', name: '英语', percentage: 92, color: '#722ed1' },
-                { id: '4', name: '物理', percentage: 88, color: '#faad14' }
-              ].map((course) => (
-                <div key={course.id} style={{ textAlign: 'center' }}>
-                  <div style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: '50%',
-                    background: `conic-gradient(${course.color} ${course.percentage}%, #f0f0f0 0)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 8
-                  }}>
-                    <span style={{ fontWeight: 'bold', color: '#1890ff' }}>
-                      {course.percentage}%
-                    </span>
-                  </div>
-                  <span style={{ fontSize: 12 }}>{course.name}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Col>
-      </Row>
+      {/* 学生详情弹窗 */}
+      <Modal
+        title={
+          <span>
+            <UserOutlined style={{ marginRight: 8 }} />
+            {selectedStudent?.name} - 学生活动详情
+          </span>
+        }
+        open={detailModalVisible}
+        onCancel={() => setDetailModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setDetailModalVisible(false)}>
+            关闭
+          </Button>
+        ]}
+        width={700}
+      >
+        {selectedStudent && (
+          <div>
+            <Alert
+              message={getActivityConfig(selectedStudent.currentActivity).label}
+              description={getActivityConfig(selectedStudent.currentActivity).description}
+              type={
+                selectedStudent.currentActivity === 'distracted' ? 'error' :
+                selectedStudent.currentActivity === 'confused' ? 'warning' :
+                selectedStudent.currentActivity === 'questioning' ? 'info' : 'success'
+              }
+              showIcon
+              style={{ marginBottom: 16 }}
+            />
+
+            <Descriptions column={2} bordered size="small">
+              <Descriptions.Item label="学号">{selectedStudent.studentIdNumber}</Descriptions.Item>
+              <Descriptions.Item label="姓名">{selectedStudent.name}</Descriptions.Item>
+              <Descriptions.Item label="当前状态">
+                <Tag color={
+                  selectedStudent.currentActivity === 'distracted' ? 'red' :
+                  selectedStudent.currentActivity === 'questioning' ? 'blue' :
+                  selectedStudent.currentActivity === 'confused' ? 'orange' : 'green'
+                }>
+                  {getActivityConfig(selectedStudent.currentActivity).icon} {getActivityConfig(selectedStudent.currentActivity).label}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="持续时间">
+                {selectedStudent.activityDuration} 分钟
+              </Descriptions.Item>
+              <Descriptions.Item label="参与度评分">
+                <Progress
+                  percent={selectedStudent.participationScore}
+                  size="small"
+                  status={selectedStudent.participationScore >= 80 ? 'success' : selectedStudent.participationScore >= 60 ? 'normal' : 'exception'}
+                />
+              </Descriptions.Item>
+              <Descriptions.Item label="最后活跃">
+                {selectedStudent.lastActive}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Divider orientation="left">活动统计</Divider>
+
+            <Row gutter={16}>
+              <Col span={8}>
+                <Card size="small">
+                  <Statistic
+                    title="提问次数"
+                    value={selectedStudent.questionCount}
+                    prefix={<CommentOutlined style={{ color: '#1890ff' }} />}
+                    valueStyle={{ fontSize: '20px' }}
+                  />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Statistic
+                    title="做笔记次数"
+                    value={selectedStudent.noteTakingCount}
+                    prefix={<FileTextOutlined style={{ color: '#52c41a' }} />}
+                    valueStyle={{ fontSize: '20px' }}
+                  />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card size="small">
+                  <Statistic
+                    title="分心次数"
+                    value={selectedStudent.distractedCount}
+                    prefix={<WarningOutlined style={{ color: '#ff4d4f' }} />}
+                    valueStyle={{ fontSize: '20px', color: '#ff4d4f' }}
+                  />
+                </Card>
+              </Col>
+            </Row>
+
+            {selectedStudent.currentActivity === 'distracted' && (
+              <Alert
+                message="建议提醒"
+                description="该学生已分心较长时间，建议适当提醒或提问以吸引注意力"
+                type="warning"
+                showIcon
+                style={{ marginTop: 16 }}
+              />
+            )}
+
+            {selectedStudent.currentActivity === 'confused' && (
+              <Alert
+                message="需要帮助"
+                description="该学生表现出疑惑，可能需要额外解释或帮助"
+                type="info"
+                showIcon
+                style={{ marginTop: 16 }}
+              />
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

@@ -67,7 +67,8 @@ app.get('/api', (_req: Request, res: Response) => {
         courses: '/api/courses',
         grades: '/api/grades',
         messages: '/api/messages',
-        appeals: '/api/appeals'
+        appeals: '/api/appeals',
+        aiAnalysis: '/api/ai-analysis'
       },
       documentation: 'See README.md for detailed API documentation'
     },
@@ -83,6 +84,7 @@ import gradeRoutes from './routes/gradeRoutes';
 import teacherRoutes from './routes/teacherRoutes';
 import messageRoutes from './routes/messageRoutes';
 import appealRoutes from './routes/appealRoutes';
+import aiAnalysisRoutes from './routes/aiAnalysisRoutes';
 
 // API Routes
 // Authentication routes
@@ -105,6 +107,9 @@ app.use('/api/messages', messageRoutes);
 
 // Appeals routes
 app.use('/api/appeals', appealRoutes);
+
+// AI Analysis routes
+app.use('/api/ai-analysis', aiAnalysisRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

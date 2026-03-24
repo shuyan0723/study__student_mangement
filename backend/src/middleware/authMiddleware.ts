@@ -2,6 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, extractTokenFromHeader } from '../utils/jwt';
 import User from '../models/User';
 
+// Extend Express Request type to include user
+export interface AuthRequest extends Request {
+  user?: {
+    id: string;
+    username: string;
+    email?: string;
+    avatar_url?: string;
+    role: string;
+    status: string;
+  };
+}
+
 // Authentication middleware
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

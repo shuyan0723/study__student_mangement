@@ -10,6 +10,10 @@ import {
   MenuUnfoldOutlined,
   BellOutlined,
   PieChartOutlined,
+  ThunderboltOutlined,
+  BarChartOutlined,
+  AppstoreOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
@@ -111,23 +115,41 @@ export const DashboardLayout = () => {
         onClick: () => navigate('/teacher/messages'),
       },
       {
+        key: 'teacher-ai-analysis',
+        icon: <ThunderboltOutlined />,
+        label: 'AI成绩分析',
+        onClick: () => navigate('/teacher/ai-analysis'),
+      },
+      {
+        key: 'teacher-analysis-records',
+        icon: <BarChartOutlined />,
+        label: '分析记录',
+        onClick: () => navigate('/teacher/analysis-records'),
+      },
+      {
+        key: 'teacher-analysis-templates',
+        icon: <AppstoreOutlined />,
+        label: '分析模板',
+        onClick: () => navigate('/teacher/analysis-templates'),
+      },
+      {
         key: 'teacher-grade-3d',
         icon: <PieChartOutlined />,
         label: '成绩3D分布',
         onClick: () => navigate('/teacher/grade-3d'),
       },
-      // {
-      //   key: 'teacher-teaching-3d',
-      //   icon: <DashboardOutlined />,
-      //   label: '教学数据3D',
-      //   onClick: () => navigate('/teacher/teaching-3d'),
-      // },
-      // {
-      //   key: 'teacher-classroom-3d',
-      //   icon: <TeamOutlined />,
-      //   label: '课堂互动3D',
-      //   onClick: () => navigate('/teacher/classroom-3d'),
-      // },
+      {
+        key: 'teacher-teaching-3d',
+        icon: <BarChartOutlined />,
+        label: '教学数据3D',
+        onClick: () => navigate('/teacher/teaching-3d'),
+      },
+      {
+        key: 'teacher-classroom-3d',
+        icon: <TeamOutlined />,
+        label: '课堂互动3D',
+        onClick: () => navigate('/teacher/classroom-3d'),
+      },
     ];
 
     const adminItems = [
@@ -154,6 +176,18 @@ export const DashboardLayout = () => {
         icon: <FileTextOutlined />,
         label: '成绩管理',
         onClick: () => navigate('/admin/grades'),
+      },
+      {
+        key: 'api-config',
+        icon: <SettingOutlined />,
+        label: 'API配置',
+        onClick: () => navigate('/admin/api-config'),
+      },
+      {
+        key: 'admin-analysis-records',
+        icon: <DatabaseOutlined />,
+        label: 'AI分析记录',
+        onClick: () => navigate('/admin/analysis-records'),
       },
       {
         key: 'system',

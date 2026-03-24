@@ -129,3 +129,6 @@ declare module 'react-router' {
 
 // Export WebRTC types
 export type { CallStatus, WebRTCCall, CallStatistics, MediaConstraints } from './webrtc';
+
+// Export AI Analysis types
+export type * from './aiAnalysis';

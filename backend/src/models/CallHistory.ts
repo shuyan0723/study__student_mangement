@@ -93,8 +93,7 @@ CallHistory.init(
     updated_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
-      onUpdate: DataTypes.NOW
+      defaultValue: DataTypes.NOW
     }
   },
   {

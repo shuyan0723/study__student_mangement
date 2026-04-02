@@ -62,8 +62,7 @@ Message.init({
     updated_at: {
         type: sequelize_1.DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize_1.DataTypes.NOW,
-        onUpdate: sequelize_1.DataTypes.NOW
+        defaultValue: sequelize_1.DataTypes.NOW
     }
 }, {
     sequelize: database_1.default,

@@ -20,9 +20,6 @@ const sequelize = new Sequelize(
   }
 );
 
-// 导入所有模型以确保它们被注册到 Sequelize
-import './models';
-
 // Test database connection
 const testConnection = async () => {
   try {
@@ -37,6 +34,8 @@ const testConnection = async () => {
 // Synchronize database models
 const syncDatabase = async () => {
   try {
+    // Import models here to avoid circular dependency
+    await import('../models');
     await sequelize.sync({
       alter: process.env.NODE_ENV === 'development' ? true : false,
       force: false

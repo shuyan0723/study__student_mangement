@@ -111,8 +111,7 @@ AnalysisRecord.init(
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
-      onUpdate: DataTypes.NOW
+      defaultValue: DataTypes.NOW
     },
     deletedAt: {
       type: DataTypes.DATE,

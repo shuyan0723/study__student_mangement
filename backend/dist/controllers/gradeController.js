@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -31,6 +8,7 @@ const express_validator_1 = require("express-validator");
 const sequelize_1 = require("sequelize");
 const Grade_1 = __importDefault(require("../models/Grade"));
 const Student_1 = __importDefault(require("../models/Student"));
+const Teacher_1 = __importDefault(require("../models/Teacher"));
 const Course_1 = __importDefault(require("../models/Course"));
 const getAllGrades = async (req, res) => {
     try {
@@ -312,8 +290,9 @@ const getTeacherCourseGrades = async (req, res) => {
             });
         }
         const { courseId } = req.params;
+        const teacher = await Teacher_1.default.findOne({ where: { user_id: user.id } });
         const course = await Course_1.default.findOne({
-            where: { id: courseId, teacher_id: (await Promise.resolve().then(() => __importStar(require('../models/Teacher')))).default.findOne({ where: { user_id: user.id } })?.id }
+            where: { id: courseId, teacher_id: teacher?.id }
         });
         if (!course) {
             return res.status(404).json({
@@ -763,7 +742,7 @@ const getStudentRankings = async (req, res) => {
                 [(0, sequelize_1.fn)('COUNT', (0, sequelize_1.col)('id')), 'course_count']
             ],
             group: ['student_id'],
-            having: (0, sequelize_1.fn)('COUNT', (0, sequelize_1.col)('id')) >= 1,
+            having: (0, sequelize_1.where)((0, sequelize_1.fn)('COUNT', (0, sequelize_1.col)('id')), { [sequelize_1.Op.gte]: 1 }),
             order: [[(0, sequelize_1.fn)('AVG', (0, sequelize_1.col)('score')), 'DESC']],
             limit: Number(limit),
             raw: true

@@ -7,6 +7,19 @@ import Course from '../models/Course';
 import Grade from '../models/Grade';
 import { Op } from 'sequelize';
 
+// WebRTC types
+interface RTCSessionDescriptionInit {
+  type: 'offer' | 'answer' | 'pranswer' | 'rollback';
+  sdp?: string;
+}
+
+interface RTCIceCandidateInit {
+  candidate: string;
+  sdpMid?: string | null;
+  sdpMLineIndex?: number | null;
+  usernameFragment?: string;
+}
+
 interface AuthenticatedSocket extends Socket {
   userId?: string;
   userRole?: 'student' | 'teacher' | 'admin';

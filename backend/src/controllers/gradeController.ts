@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import { Op, col, fn, where } from 'sequelize';
 import Grade from '../models/Grade';
 import Student from '../models/Student';
+import Teacher from '../models/Teacher';
 import Course from '../models/Course';
 
 export const getAllGrades = async (req: Request, res: Response) => {
@@ -309,8 +310,9 @@ export const getTeacherCourseGrades = async (req: Request, res: Response) => {
 
     const { courseId } = req.params;
 
+    const teacher = await Teacher.findOne({ where: { user_id: user.id } });
     const course = await Course.findOne({
-      where: { id: courseId, teacher_id: (await import('../models/Teacher')).default.findOne({ where: { user_id: user.id } })?.id }
+      where: { id: courseId, teacher_id: teacher?.id }
     });
 
     if (!course) {
@@ -648,18 +650,18 @@ export const getGradeStatistics = async (req: Request, res: Response) => {
       success: true,
       data: {
         overview: {
-          totalGrades: stats.total_count || 0,
-          averageScore: stats.avg_score ? parseFloat(stats.avg_score).toFixed(2) : 0,
-          highestScore: stats.max_score || 0,
-          lowestScore: stats.min_score || 0
+          totalGrades: (stats as any).total_count || 0,
+          averageScore: (stats as any).avg_score ? parseFloat((stats as any).avg_score).toFixed(2) : 0,
+          highestScore: (stats as any).max_score || 0,
+          lowestScore: (stats as any).min_score || 0
         },
         gradeDistribution: {
-          A: gradeDistribution.find((g: any) => g.grade_level === 'A')?.count || 0,
-          B: gradeDistribution.find((g: any) => g.grade_level === 'B')?.count || 0,
-          C: gradeDistribution.find((g: any) => g.grade_level === 'C')?.count || 0,
-          D: gradeDistribution.find((g: any) => g.grade_level === 'D')?.count || 0,
-          E: gradeDistribution.find((g: any) => g.grade_level === 'E')?.count || 0,
-          F: gradeDistribution.find((g: any) => g.grade_level === 'F')?.count || 0
+          A: (gradeDistribution.find((g: any) => g.grade_level === 'A') as any)?.count || 0,
+          B: (gradeDistribution.find((g: any) => g.grade_level === 'B') as any)?.count || 0,
+          C: (gradeDistribution.find((g: any) => g.grade_level === 'C') as any)?.count || 0,
+          D: (gradeDistribution.find((g: any) => g.grade_level === 'D') as any)?.count || 0,
+          E: (gradeDistribution.find((g: any) => g.grade_level === 'E') as any)?.count || 0,
+          F: (gradeDistribution.find((g: any) => g.grade_level === 'F') as any)?.count || 0
         },
         scoreRanges: {
           excellent,
@@ -779,7 +781,7 @@ export const getStudentRankings = async (req: Request, res: Response) => {
         [fn('COUNT', col('id')), 'course_count']
       ],
       group: ['student_id'],
-      having: fn('COUNT', col('id')) >= 1,
+      having: where(fn('COUNT', col('id')), { [Op.gte]: 1 }) as any,
       order: [[fn('AVG', col('score')), 'DESC']],
       limit: Number(limit),
       raw: true

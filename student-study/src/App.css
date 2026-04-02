@@ -2,6 +2,8 @@
   width: 100%;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 50%, #ffeaea 100%);
 }
 
 body {
@@ -11,6 +13,7 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 50%, #ffeaea 100%);
 }
 
 * {
@@ -24,7 +27,7 @@ body {
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #d9363eee);
 }
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);

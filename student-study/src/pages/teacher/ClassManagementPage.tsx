@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Card,
   Table,
@@ -6,7 +6,6 @@ import {
   Space,
   Tag,
   Tabs,
-  List,
   Avatar,
   Progress,
   Statistic,
@@ -19,7 +18,7 @@ import {
   message,
   Badge,
   Tooltip,
-  Divider
+  Alert
 } from 'antd';
 import {
   TeamOutlined,
@@ -65,9 +64,9 @@ export const ClassManagementPage = () => {
 
     return {
       total,
-      average: average.toFixed(1),
-      passRate: ((passed / total) * 100).toFixed(1),
-      excellentRate: ((excellent / total) * 100).toFixed(1)
+      average,
+      passRate: (passed / total) * 100,
+      excellentRate: (excellent / total) * 100
     };
   };
 
@@ -161,7 +160,7 @@ export const ClassManagementPage = () => {
             precision={1}
             valueStyle={{
               fontSize: '14px',
-              color: parseFloat(stats.average) >= 80 ? '#3f8600' : parseFloat(stats.average) >= 60 ? '#1890ff' : '#ff4d4f'
+              color: stats.average >= 80 ? '#3f8600' : stats.average >= 60 ? '#1890ff' : '#ff4d4f'
             }}
           />
         );
@@ -176,9 +175,9 @@ export const ClassManagementPage = () => {
         const stats = getCourseStats(record.id);
         return (
           <Progress
-            percent={parseFloat(stats.passRate)}
+            percent={stats.passRate}
             size="small"
-            status={parseFloat(stats.passRate) >= 80 ? 'success' : parseFloat(stats.passRate) >= 60 ? 'normal' : 'exception'}
+            status={stats.passRate >= 80 ? 'success' : stats.passRate >= 60 ? 'normal' : 'exception'}
           />
         );
       }
@@ -276,7 +275,7 @@ export const ClassManagementPage = () => {
       render: (_, record) => {
         const grade = getStudentGrade(record.id, selectedCourse?.id);
         return (
-          <Tooltip title={grade?.comment}>
+          <Tooltip title={grade?.feedback}>
             <span style={{
               maxWidth: '200px',
               overflow: 'hidden',
@@ -284,7 +283,7 @@ export const ClassManagementPage = () => {
               whiteSpace: 'nowrap',
               display: 'inline-block'
             }}>
-              {grade?.comment || '-'}
+              {grade?.feedback || '-'}
             </span>
           </Tooltip>
         );

@@ -238,7 +238,7 @@ export const DashboardPage = () => {
 
   return (
     <div>
-      <Card style={{ marginBottom: 24, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
+      <Card style={{ marginBottom: 24, background: 'linear-gradient(135deg, #d9363e 0%, #cf1322 100%)', color: 'white' }}>
         <h2 style={{ color: 'white', margin: 0 }}>欢迎, {user?.username}!</h2>
         <p style={{ color: 'rgba(255, 255, 255, 0.85)', margin: '8px 0 0 0' }}>
           {user?.role === 'student' && '祝你学习进步'}

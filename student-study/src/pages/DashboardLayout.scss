@@ -1,7 +1,7 @@
 $sider-background: #fff;
-$logo-color: #667eea;
+$logo-color: #d9363e;
 $header-background: #fff;
-$content-background: #f5f7fa;
+$content-background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
 $text-primary: #333;
 $border-color: #f0f0f0;
 $shadow-light: 2px 0 8px rgba(0, 0, 0, 0.06);
@@ -10,6 +10,7 @@ $shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.06);
 .dashboard-sider {
   background: $sider-background;
   box-shadow: $shadow-light;
+  border-right: 3px solid #ffccc7;
 }
 
 .logo {
@@ -32,6 +33,7 @@ $shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 0 24px;
   box-shadow: $shadow-medium;
   height: 64px;
+  border-bottom: 2px solid #ffccc7;
 
   .header-left {
     display: flex;
@@ -53,7 +55,7 @@ $shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
 
     &:hover {
-      background: #f5f5f5;
+      background: #fff5f5;
     }
 
     .username {

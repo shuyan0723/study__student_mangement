@@ -270,7 +270,7 @@ export const DashboardLayout = () => {
               placement="bottomRight"
             >
               <div className="user-menu" style={{ cursor: 'pointer' }}>
-                <Avatar style={{ backgroundColor: '#667eea' }}>
+                <Avatar style={{ backgroundColor: '#f5222d' }}>
                   {user?.username.charAt(0).toUpperCase()}
                 </Avatar>
                 <span className="username">{user?.username}</span>

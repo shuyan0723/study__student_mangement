@@ -13,7 +13,7 @@ import studentRoutes from './studentRoutes';    // src/routes/studentRoutes.tsx
 import adminRoutes from './adminRoutes';        // src/routes/adminRoutes.tsx
 import teacherRoutes from './teacherRoutes';    // src/routes/teacherRoutes.tsx
 
-// 受保护路由组件
+// 受保护路由组件 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
   return isAuthenticated ? children : <Navigate to="/login" />;

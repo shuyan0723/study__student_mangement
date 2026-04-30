@@ -114,30 +114,30 @@ export const DashboardLayout = () => {
         label: '学生交流',
         onClick: () => navigate('/teacher/messages'),
       },
-      {
-        key: 'teacher-ai-analysis',
-        icon: <ThunderboltOutlined />,
-        label: 'AI成绩分析',
-        onClick: () => navigate('/teacher/ai-analysis'),
-      },
-      {
-        key: 'teacher-analysis-records',
-        icon: <BarChartOutlined />,
-        label: '分析记录',
-        onClick: () => navigate('/teacher/analysis-records'),
-      },
-      {
-        key: 'teacher-analysis-templates',
-        icon: <AppstoreOutlined />,
-        label: '分析模板',
-        onClick: () => navigate('/teacher/analysis-templates'),
-      },
-      {
-        key: 'teacher-grade-3d',
-        icon: <PieChartOutlined />,
-        label: '成绩3D分布',
-        onClick: () => navigate('/teacher/grade-3d'),
-      },
+      // {
+      //   key: 'teacher-ai-analysis',
+      //   icon: <ThunderboltOutlined />,
+      //   label: 'AI成绩分析',
+      //   onClick: () => navigate('/teacher/ai-analysis'),
+      // },
+      // {
+      //   key: 'teacher-analysis-records',
+      //   icon: <BarChartOutlined />,
+      //   label: '分析记录',
+      //   onClick: () => navigate('/teacher/analysis-records'),
+      // },
+      // {
+      //   key: 'teacher-analysis-templates',
+      //   icon: <AppstoreOutlined />,
+      //   label: '分析模板',
+      //   onClick: () => navigate('/teacher/analysis-templates'),
+      // },
+      // {
+      //   key: 'teacher-grade-3d',
+      //   icon: <PieChartOutlined />,
+      //   label: '成绩3D分布',
+      //   onClick: () => navigate('/teacher/grade-3d'),
+      // },
       {
         key: 'teacher-teaching-3d',
         icon: <BarChartOutlined />,
@@ -177,24 +177,24 @@ export const DashboardLayout = () => {
         label: '成绩管理',
         onClick: () => navigate('/admin/grades'),
       },
-      {
-        key: 'api-config',
-        icon: <SettingOutlined />,
-        label: 'API配置',
-        onClick: () => navigate('/admin/api-config'),
-      },
-      {
-        key: 'admin-analysis-records',
-        icon: <DatabaseOutlined />,
-        label: 'AI分析记录',
-        onClick: () => navigate('/admin/analysis-records'),
-      },
-      {
-        key: 'system',
-        icon: <SettingOutlined />,
-        label: '系统设置',
-        onClick: () => navigate('/admin/settings'),
-      },
+      // {
+      //   key: 'api-config',
+      //   icon: <SettingOutlined />,
+      //   label: 'API配置',
+      //   onClick: () => navigate('/admin/api-config'),
+      // },
+      // {
+      //   key: 'admin-analysis-records',
+      //   icon: <DatabaseOutlined />,
+      //   label: 'AI分析记录',
+      //   onClick: () => navigate('/admin/analysis-records'),
+      // },
+      // {
+      //   key: 'system',
+      //   icon: <SettingOutlined />,
+      //   label: '系统设置',
+      //   onClick: () => navigate('/admin/settings'),
+      // },
     ];
 
     if (user?.role === 'student') {

@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import './LoginPage.less';
-1 2 4 8 16 32 64
+
 export const LoginPage = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
